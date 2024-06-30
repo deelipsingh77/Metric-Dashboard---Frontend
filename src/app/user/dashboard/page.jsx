@@ -1,6 +1,5 @@
 "use client";
 import MeterGauge from "@/components/MeterGauge";
-import { ModeToggle } from "@/components/DarkMode";
 import {
   Card,
   CardContent,
@@ -8,20 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BarChart } from "@mui/x-charts/BarChart";
 import { LineChart } from "@mui/x-charts/LineChart";
 import Smileys from "@/components/Smileys";
-import { gauge, seriesA, seriesB, seriesC } from "@/utils/data";
+import { gauge } from "@/utils/data";
 import DownTimeChart from "@/components/DownTimeChart";
 import BarGraph from "@/components/BarGraph";
 
 const Dashboard = () => {
   return (
     <main>
-      <div className="flex justify-between">
-        <h1 className="text-3xl font-bold p-1">Dashboard</h1>
-        <ModeToggle />
-      </div>
       <section id="dashboard" className="grid grid-cols-4 gap-4">
         <Card className="shadow-md dark:bg-slate-900">
           <CardHeader>
@@ -49,7 +43,7 @@ const Dashboard = () => {
 
         <Card className="shadow-md dark:bg-slate-900">
           <CardHeader>
-            <CardTitle>Monthly Production & Target</CardTitle>
+            <CardTitle>Monthly Production</CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>

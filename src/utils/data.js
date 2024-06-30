@@ -1,16 +1,3 @@
-const seriesA = {
-  data: [2, 3, 1, 4, 5],
-  label: "Series A",
-};
-const seriesB = {
-  data: [3, 1, 4, 2, 1],
-  label: "Series B",
-};
-const seriesC = {
-  data: [3, 2, 4, 5, 1],
-  label: "Series C",
-};
-
 const gauge = {
   rc: 51,
   tp: 41,
@@ -62,4 +49,4 @@ const monthlyProductionData = [
 ];
 
 
-export { seriesA, seriesB, seriesC, gauge, data, monthlyProductionData };
+export { gauge, data, monthlyProductionData };

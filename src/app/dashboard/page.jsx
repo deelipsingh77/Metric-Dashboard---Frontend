@@ -10,19 +10,10 @@ import {
 } from "@/components/ui/card";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { LineChart } from "@mui/x-charts/LineChart";
-
-const seriesA = {
-  data: [2, 3, 1, 4, 5],
-  label: "Series A",
-};
-const seriesB = {
-  data: [3, 1, 4, 2, 1],
-  label: "Series B",
-};
-const seriesC = {
-  data: [3, 2, 4, 5, 1],
-  label: "Series C",
-};
+import Smileys from "@/components/Smileys";
+import { gauge, seriesA, seriesB, seriesC } from "@/utils/data";
+import DownTimeChart from "@/components/DownTimeChart";
+import BarGraph from "@/components/BarGraph";
 
 const Dashboard = () => {
   return (
@@ -32,7 +23,7 @@ const Dashboard = () => {
         <ModeToggle />
       </div>
       <section id="dashboard" className="grid grid-cols-4 gap-4">
-        <Card className="shadow-md">
+        <Card className="shadow-md dark:bg-slate-900">
           <CardHeader>
             <CardTitle>Power Factor</CardTitle>
           </CardHeader>
@@ -44,9 +35,9 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-md">
+        <Card className="shadow-md dark:bg-slate-900">
           <CardHeader>
-            <CardTitle>Monthly Production and Target</CardTitle>
+            <CardTitle>CPT</CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
@@ -56,9 +47,9 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-md">
+        <Card className="shadow-md dark:bg-slate-900">
           <CardHeader>
-            <CardTitle>Monthly Production and Target</CardTitle>
+            <CardTitle>Monthly Production & Target</CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
@@ -68,61 +59,74 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="row-span-2 shadow-md">
-          <CardHeader>
-            <CardTitle>Monthly Production and Target</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac
-              erat nec felis ultricies rutrum.
-            </CardDescription>
+        <Card className="row-span-2 shadow-md flex flex-col dark:bg-slate-900">
+          <CardHeader className="p-0 text-center text-2xl font-semibold pt-3">Monthly Target</CardHeader>
+          <CardContent className="flex flex-col items-center justify-around h-full">
+            <div className="flex items-center gap-2 mt-2 w-full">
+              <Smileys value={gauge.rc} />
+              <div className="grow">
+                <h1 className="text-3xl font-bold text-center">{gauge.rc}%</h1>
+                <h2 className="text-center">RC</h2>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 mt-2 w-full">
+              <Smileys value={gauge.tp} />
+              <div className="grow">
+                <h1 className="text-3xl font-bold text-center">{gauge.tp}%</h1>
+                <h2 className="text-center">TP</h2>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 mt-2 w-full">
+              <Smileys value={gauge.cp} />
+              <div className="grow">
+                <h1 className="text-3xl font-bold text-center">{gauge.cp}%</h1>
+                <h2 className="text-center">CP</h2>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <div className="col-span-3 flex justify-evenly">
-          <div className="shadow-md rounded-xl px-6">
-            <MeterGauge value={30} />
-          </div>
-          <div className="shadow-md rounded-xl px-6">
-            <MeterGauge value={30} />
-          </div>
-          <div className="shadow-md rounded-xl px-6">
-            <MeterGauge value={30} />
-          </div>
-          <div className="shadow-md rounded-xl px-6">
-            <MeterGauge value={30} />
-          </div>
+        <div className="col-span-3 flex justify-evenly gap-2">
+          <Card className="shadow-md rounded-xl px-6 dark:bg-slate-900">
+            <CardHeader className="text-center pb-0">RC</CardHeader>
+            <CardContent>
+              <MeterGauge value={gauge.rc} />
+              <h1 className="text-center">{gauge.rc}</h1>
+            </CardContent>
+          </Card>
+          <Card className="shadow-md rounded-xl px-6 dark:bg-slate-900">
+            <CardHeader className="text-center pb-0">TP</CardHeader>
+            <CardContent>
+              <MeterGauge value={gauge.tp} />
+              <h1 className="text-center">{gauge.tp}</h1>
+            </CardContent>
+          </Card>
+          <Card className="shadow-md rounded-xl px-6 dark:bg-slate-900">
+            <CardHeader className="text-center pb-0">CP</CardHeader>
+            <CardContent>
+              <MeterGauge value={gauge.cp} />
+              <h1 className="text-center">{gauge.cp}</h1>
+            </CardContent>
+          </Card>
+          <Card className="shadow-md rounded-xl px-6 dark:bg-slate-900">
+            <CardHeader className="text-center pb-0">Labour Count</CardHeader>
+            <CardContent>
+              <MeterGauge value={gauge.labourCount} />
+              <h1 className="text-center">{gauge.labourCount}</h1>
+            </CardContent>
+          </Card>
         </div>
 
         <div id="last-row" className="flex justify-evenly col-span-4">
-          <div className="shadow-md rounded-xl">
-            <BarChart
-              width={400}
-              height={300}
-              series={[
-                { ...seriesA, stack: "total" },
-                { ...seriesB, stack: "total" },
-                { ...seriesC, stack: "total" },
-              ]}
-            />
-          </div>
+          <Card className="shadow-md rounded-xl flex justify-center dark:bg-slate-900">
+            <BarGraph />
+          </Card>
 
-          <div className="shadow-md rounded-xl">
-            <LineChart
-              xAxis={[{ data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }]}
-              series={[
-                {
-                  data: [2, 3, 5.5, 8.5, 1.5, 5, 1, 4, 3, 8],
-                  showMark: ({ index }) => index % 2 === 0,
-                },
-              ]}
-              width={500}
-              height={300}
-            />
-          </div>
+          <Card className="shadow-md rounded-xl flex justify-center dark:bg-slate-900">
+            <DownTimeChart />
+          </Card>
 
-          <div className="shadow-md rounded-xl">
+          <Card className="shadow-md rounded-xl dark:bg-slate-900">
             <LineChart
               xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
               series={[
@@ -132,9 +136,9 @@ const Dashboard = () => {
                 },
               ]}
               width={500}
-              height={300}
+              height={250}
             />
-          </div>
+          </Card>
         </div>
       </section>
     </main>

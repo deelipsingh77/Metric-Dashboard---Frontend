@@ -1,5 +1,4 @@
-"use client";
-
+import React from "react";
 import {
   GaugeContainer,
   GaugeValueArc,
@@ -19,6 +18,8 @@ function GaugePointer({ value }) {
     x: cx + outerRadius * Math.sin(valueAngle),
     y: cy - outerRadius * Math.cos(valueAngle),
   };
+
+
   return (
     <g>
       <circle cx={cx} cy={cy} r={5} fill="red" />
@@ -27,16 +28,6 @@ function GaugePointer({ value }) {
         stroke="red"
         strokeWidth={5}
       />
-      <text
-        x={cx}
-        y={cy + 30}
-        fill="white"
-        fontSize="16"
-        textAnchor="middle"
-        dy=".3em"
-      >
-        {value}
-      </text>
     </g>
   );
 }
@@ -44,15 +35,18 @@ function GaugePointer({ value }) {
 export default function MeterGauge({ value }) {
   return (
     <GaugeContainer
-      width={200}
-      height={200}
+      width={180}
+      height={150}
       startAngle={-110}
       endAngle={110}
       value={value}
+      valueMax={100}
+      valueMin={0}
+      // backgroundColor={containerBackgroundColor}
     >
       <GaugeReferenceArc />
-      <GaugeValueArc/>
-      <GaugePointer value={value}/>
+      <GaugeValueArc />
+      <GaugePointer value={value} />
     </GaugeContainer>
   );
 }

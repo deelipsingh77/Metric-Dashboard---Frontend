@@ -11,19 +11,18 @@ import { Label } from "@/components/ui/label";
 
 import { useAuth } from "@/context/AuthContext";
 
-
 export function UserAuthForm({ className, ...props }) {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { signup, loginWithGoogle } = useAuth();
+  const { signup, loginWithGoogle, error } = useAuth();
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     await loginWithGoogle();
     setIsLoading(false);
-  }
+  };
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -37,6 +36,7 @@ export function UserAuthForm({ className, ...props }) {
   return (
     <div className={cn("grid gap-6", className)} {...props}>
       <form onSubmit={onSubmit}>
+        {error ? <div className="text-red-500">{error}</div> : null}
         <div className="grid gap-2">
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="email">
@@ -86,7 +86,12 @@ export function UserAuthForm({ className, ...props }) {
           </span>
         </div>
       </div>
-      <Button variant="outline" onClick={()=>handleGoogleLogin()} type="button" disabled={isLoading}>
+      <Button
+        variant="outline"
+        onClick={() => handleGoogleLogin()}
+        type="button"
+        disabled={isLoading}
+      >
         {isLoading ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (

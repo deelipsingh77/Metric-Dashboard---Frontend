@@ -15,12 +15,13 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const login = async (email, password) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      console.log(error.message);
+      setError(error.code);
     }
   };
 
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await signOut(auth);
     } catch (error) {
-      console.log(error.message);
+      setError(error.code);
     }
   };
 
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      console.log(error.message);
+      setError(error.code);
     }
   };
 
@@ -44,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
-      console.log(error.message);
+      setError(error.code);
     }
   };
 
@@ -57,8 +58,10 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
+  const value = { user, login, logout, signup, loginWithGoogle, loading, error };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, signup, loginWithGoogle, loading }}>
+    <AuthContext.Provider value={value}>
       {!loading && children}
     </AuthContext.Provider>
   );

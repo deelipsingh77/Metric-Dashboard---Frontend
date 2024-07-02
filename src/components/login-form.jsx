@@ -15,7 +15,7 @@ export function UserAuthForm({ className, ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, error } = useAuth();
 
   async function handleGoogleLogin() {
     setIsLoading(true);
@@ -33,6 +33,7 @@ export function UserAuthForm({ className, ...props }) {
   return (
     <div className={cn("grid gap-6", className)} {...props}>
       <form onSubmit={onSubmit}>
+        {error ? <div className="text-red-500">{error}</div> : null}
         <div className="grid gap-2">
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="email">

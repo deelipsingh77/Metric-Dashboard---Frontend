@@ -15,16 +15,19 @@ export function UserAuthForm({ className, ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
+
+  async function handleGoogleLogin() {
+    setIsLoading(true);
+    await loginWithGoogle();
+    setIsLoading(false);
+  }
 
   async function onSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
-    login(email, password);
-
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
+    await login(email, password);
+    setIsLoading(false);
   }
 
   return (
@@ -80,7 +83,12 @@ export function UserAuthForm({ className, ...props }) {
           </span>
         </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
+      <Button
+        variant="outline"
+        type="button"
+        onClick={() => handleGoogleLogin()}
+        disabled={isLoading}
+      >
         {isLoading ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (

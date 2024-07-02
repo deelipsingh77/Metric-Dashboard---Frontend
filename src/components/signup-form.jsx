@@ -17,7 +17,13 @@ export function UserAuthForm({ className, ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { signup } = useAuth();
+  const { signup, loginWithGoogle } = useAuth();
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    await loginWithGoogle();
+    setIsLoading(false);
+  }
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -80,7 +86,7 @@ export function UserAuthForm({ className, ...props }) {
           </span>
         </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
+      <Button variant="outline" onClick={()=>handleGoogleLogin()} type="button" disabled={isLoading}>
         {isLoading ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (

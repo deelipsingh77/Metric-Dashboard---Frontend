@@ -1,13 +1,15 @@
-import { ModeToggle } from "@/components/DarkMode";
 import NavBar from "@/components/NavBar";
+import ProtectedRoute from "@/utils/ProtectedRoute";
 
 const UserLayout = ({ children }) => {
   return (
     <>
-      <header>
-        <NavBar />
-      </header>
-      {children}
+      <ProtectedRoute>
+        <header>
+          <NavBar />
+        </header>
+        {children}
+      </ProtectedRoute>
     </>
   );
 };

@@ -5,10 +5,13 @@ import routes from "@/utils/routes";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
+import { Button } from "./ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 const NavBar = () => {
   const path = usePathname();
   const [title, setTitle] = useState("");
+  const { logout } = useAuth()
 
   useEffect(() => {
     // Find the route object that matches the current path
@@ -23,17 +26,6 @@ const NavBar = () => {
       <div className="flex justify-between">
         <h1 className="text-3xl font-bold p-1 min-w-max">{title}</h1>
         <ul className="flex justify-center gap-6 items-center grow">
-          {/* <li>
-            <Link
-              href="/user/dashboard"
-              className={clsx("hover:text-slate-400", {
-                "bg-white text-black px-2 py-1 rounded-xl":
-                  path === "/user/dashboard",
-              })}
-            >
-              Dashboard
-            </Link>
-          </li> */}
           {routes.map((route) => (
             <li key={route.route}>
               <Link
@@ -47,6 +39,7 @@ const NavBar = () => {
               </Link>
             </li>
           ))}
+          <li><Button variant="destructive" onClick={()=>logout()}>Logout</Button></li>
         </ul>
         <ModeToggle />
       </div>

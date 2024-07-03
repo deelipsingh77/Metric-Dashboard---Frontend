@@ -171,7 +171,7 @@ const Dashboard = () => {
         </div>
         <Card className="shadow-md col-span-12 rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
           <CardHeader className="font-semibold p-2 text-lg">Down Time</CardHeader>
-          <DownTimeChart width={window.innerWidth < 640 ? 400 : 1250} />
+          <DownTimeChart width={window.innerWidth < 640 ? 350 : 1250} />
         </Card>
       </section>
     </main>

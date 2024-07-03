@@ -1,9 +1,5 @@
 const routes = [
     {
-        route: '/',
-        name: 'Home',
-    },
-    {
         route: '/user/dashboard',
         name: 'Dashboard',
     },

@@ -8,12 +8,19 @@ import clsx from "clsx";
 import { Button } from "./ui/button";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const NavBar = () => {
   const path = usePathname();
   const [title, setTitle] = useState("");
   const { logout, user } = useAuth();
-  console.log(user);
 
   useEffect(() => {
     // Find the route object that matches the current path
@@ -25,9 +32,9 @@ const NavBar = () => {
 
   return (
     <nav>
-      <div className="flex justify-between gap-2 items-center">
+      <div className="flex justify-between gap-2 items-center mx-4">
         <h1 className="text-3xl font-bold p-1 min-w-max">{title}</h1>
-        <ul className="flex justify-center gap-6 items-center grow">
+        {/* <ul className="flex justify-center gap-6 items-center grow">
           {routes.map((route) => (
             <li key={route.route}>
               <Link
@@ -46,14 +53,34 @@ const NavBar = () => {
               Logout
             </Button>
           </li>
-        </ul>
+        </ul> */}
+
         <div className="flex justify-center items-center gap-3">
-          {user?.photoURL && (
-            <Image width={30} height={30} src={user?.photoURL} alt="Profile Pic" className="rounded-full" />
-          )}
-          <div>{user?.displayName}</div>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <div className="flex justify-center items-center gap-3">
+                {user?.photoURL && (
+                  <Image
+                    width={30}
+                    height={30}
+                    src={user?.photoURL}
+                    alt="Profile Pic"
+                    className="rounded-full"
+                  />
+                )}
+                <div>{user?.displayName || user?.email}</div>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <button onClick={() => logout()}>Logout</button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <ModeToggle />
         </div>
-        <ModeToggle />
       </div>
     </nav>
   );

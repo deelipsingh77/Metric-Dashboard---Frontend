@@ -26,12 +26,14 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const DownTimeChart = () => {
+const DownTimeChart = ({width, height}) => {
   return (
-    <ResponsiveContainer width={500} height={250} className="py-4">
+    <div className="py-4">
       <LineChart
         data={data}
         margin={{ top: 10, right: 40, left: 0, bottom: 5 }}
+        width={width || 500}
+        height={height || 250}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="time" />
@@ -40,7 +42,7 @@ const DownTimeChart = () => {
         <Legend />
         <Line type="monotone" dataKey="downMachines" stroke="#8884d8" />
       </LineChart>
-    </ResponsiveContainer>
+    </div>
   );
 };
 export default DownTimeChart;

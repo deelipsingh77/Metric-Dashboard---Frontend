@@ -1,5 +1,4 @@
 "use client";
-import MeterGauge from "@/components/MeterGauge";
 import {
   Card,
   CardContent,
@@ -7,11 +6,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { LineChart } from "@mui/x-charts/LineChart";
 import Smileys from "@/components/Smileys";
-import { gauge } from "@/utils/data";
+import { gauge, monthlyProductionData } from "@/utils/data";
 import DownTimeChart from "@/components/DownTimeChart";
 import BarGraph from "@/components/BarGraph";
+import NeedlePieChart from "@/components/NeedlePieChart";
+import { DataTable } from "@/components/DataTable";
+
+export const columns = [
+  {
+    accessorKey: "rc",
+    header: "RC",
+  },
+  {
+    accessorKey: "tp",
+    header: "TP",
+  },
+  {
+    accessorKey: "cp",
+    header: "CP",
+  },
+];
 
 const Dashboard = () => {
   return (
@@ -43,18 +58,30 @@ const Dashboard = () => {
 
         <Card className="shadow-md dark:bg-slate-900">
           <CardHeader>
-            <CardTitle>Monthly Production</CardTitle>
+            <CardTitle>Daily Labour Count</CardTitle>
           </CardHeader>
           <CardContent>
-            <CardDescription>
+            {/* <CardDescription>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac
               erat nec felis ultricies rutrum.
-            </CardDescription>
+            </CardDescription> */}
+            <DataTable
+              columns={columns}
+              data={[
+                {
+                  rc: gauge.rc,
+                  tp: gauge.tp,
+                  cp: gauge.cp,
+                },
+              ]}
+            />
           </CardContent>
         </Card>
 
         <Card className="row-span-2 shadow-md flex flex-col dark:bg-slate-900">
-          <CardHeader className="p-0 text-center text-2xl font-semibold pt-3">Monthly Target</CardHeader>
+          <CardHeader className="p-0 text-center text-2xl font-semibold pt-3">
+            Monthly Target
+          </CardHeader>
           <CardContent className="flex flex-col items-center justify-around h-full">
             <div className="flex items-center gap-2 mt-2 w-full">
               <Smileys value={gauge.rc} />
@@ -80,60 +107,72 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <div className="col-span-3 flex justify-evenly gap-2">
-          <Card className="shadow-md rounded-xl px-6 dark:bg-slate-900">
-            <CardHeader className="text-center pb-0">RC</CardHeader>
+        <div className="col-span-3 grid grid-cols-4 gap-2">
+          <Card className="flex flex-col min-h-60 dark:bg-slate-900">
+            <CardHeader className="text-center pb-0 font-bold text-xl">
+              RC
+            </CardHeader>
+            <NeedlePieChart value={gauge.rc} total={100}/>
+            <h1 className="text-center text-2xl font-bold pb-4">{gauge.rc}</h1>
+          </Card>
+          <Card className="flex flex-col min-h-60 dark:bg-slate-900">
+            <CardHeader className="text-center pb-0 font-bold text-xl">
+              TP
+            </CardHeader>
+            <NeedlePieChart value={gauge.tp} total={100}/>
+            <h1 className="text-center text-2xl font-bold pb-4">{gauge.tp}</h1>
+          </Card>
+          <Card className="flex flex-col min-h-60 dark:bg-slate-900">
+            <CardHeader className="text-center pb-0 font-bold text-xl">
+              CP
+            </CardHeader>
+            <NeedlePieChart value={gauge.cp} total={100}/>
+            <h1 className="text-center text-2xl font-bold pb-4">{gauge.cp}</h1>
+          </Card>
+          <Card className="flex flex-col min-h-60 dark:bg-slate-900">
+            <CardHeader className="text-center pb-0 font-bold text-xl">
+              Production
+            </CardHeader>
+            <NeedlePieChart value={gauge.tp + gauge.rc + gauge.cp} total={300}/>
+            <h1 className="text-center text-2xl font-bold pb-4">
+              {gauge.tp + gauge.rc + gauge.cp}
+            </h1>
+          </Card>
+        </div>
+
+        <div
+          id="last-row"
+          className="grid grid-cols-4 justify-evenly col-span-4 gap-2"
+        >
+          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+            <CardHeader className="font-semibold p-2 text-lg">Total</CardHeader>
             <CardContent>
-              <MeterGauge value={gauge.rc} />
-              <h1 className="text-center">{gauge.rc}</h1>
+              <BarGraph monthlyProductionData={monthlyProductionData} />
             </CardContent>
           </Card>
-          <Card className="shadow-md rounded-xl px-6 dark:bg-slate-900">
-            <CardHeader className="text-center pb-0">TP</CardHeader>
+          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+            <CardHeader className="font-semibold p-2 text-lg">RC</CardHeader>
             <CardContent>
-              <MeterGauge value={gauge.tp} />
-              <h1 className="text-center">{gauge.tp}</h1>
+              <BarGraph monthlyProductionData={monthlyProductionData} />
             </CardContent>
           </Card>
-          <Card className="shadow-md rounded-xl px-6 dark:bg-slate-900">
-            <CardHeader className="text-center pb-0">CP</CardHeader>
+          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+            <CardHeader className="font-semibold p-2 text-lg">TP</CardHeader>
             <CardContent>
-              <MeterGauge value={gauge.cp} />
-              <h1 className="text-center">{gauge.cp}</h1>
+              <BarGraph monthlyProductionData={monthlyProductionData} />
             </CardContent>
           </Card>
-          <Card className="shadow-md rounded-xl px-6 dark:bg-slate-900">
-            <CardHeader className="text-center pb-0">Labour Count</CardHeader>
+          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+            <CardHeader className="font-semibold p-2 text-lg">CP</CardHeader>
             <CardContent>
-              <MeterGauge value={gauge.labourCount} />
-              <h1 className="text-center">{gauge.labourCount}</h1>
+              <BarGraph monthlyProductionData={monthlyProductionData} />
             </CardContent>
           </Card>
         </div>
-
-        <div id="last-row" className="flex justify-evenly col-span-4">
-          <Card className="shadow-md rounded-xl flex justify-center dark:bg-slate-900">
-            <BarGraph />
-          </Card>
-
-          <Card className="shadow-md rounded-xl flex justify-center dark:bg-slate-900">
-            <DownTimeChart />
-          </Card>
-
-          <Card className="shadow-md rounded-xl dark:bg-slate-900">
-            <LineChart
-              xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
-              series={[
-                {
-                  data: [2, 5.5, 2, 8.5, 1.5, 5],
-                  area: true,
-                },
-              ]}
-              width={500}
-              height={250}
-            />
-          </Card>
-        </div>
+        <Card className="shadow-md col-span-4 rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+          <CardHeader className="font-semibold p-2 text-lg">Down Time</CardHeader>
+          <DownTimeChart width={1250} />
+        </Card>
       </section>
     </main>
   );

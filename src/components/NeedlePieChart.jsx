@@ -1,23 +1,23 @@
 "use client";
 import React from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell } from "recharts";
 
 const RADIAN = Math.PI / 180;
 const data = [
-  { name: "A", value: 45, color: "#ff0000" },
-  { name: "B", value: 30, color: "#ffff00" },
-  { name: "C", value: 75, color: "#00ff00" },
+  { name: "A", value: 30, color: "#ff0000" },
+  { name: "B", value: 20, color: "#ffff00" },
+  { name: "C", value: 50, color: "#00ff00" },
 ];
 const cx = 150;
 const cy = 150;
 const iR = 80;
 const oR = 100;
 
-const needle = (value, data, cx, cy, iR, oR, color) => {
-  let total = 0;
-  data.forEach((v) => {
-    total += v.value;
-  });
+const needle = (value, total, cx, cy, iR, oR, color) => {
+  // let total = 0;
+  // data.forEach((v) => {
+  //   total += v.value;
+  // });
   const ang = 180.0 * (1 - value / total);
   const length = (iR + 2 * oR) / 3;
   const sin = Math.sin(-RADIAN * ang);
@@ -43,7 +43,8 @@ const needle = (value, data, cx, cy, iR, oR, color) => {
   ];
 };
 
-const Example = ({value}) => {
+const Example = ({value, total}) => {
+  if(value > 100) value = 100;
   return (
     <div className="flex justify-center items-center h-full">
       <PieChart width={310} height={200}>
@@ -63,7 +64,7 @@ const Example = ({value}) => {
             <Cell key={`cell-${index}`} fill={entry.color} />
           ))}
         </Pie>
-        {needle(value, data, cx, cy, iR, oR, "#d0d000")}
+        {needle(value, total, cx, cy, iR, oR, "#d0d000")}
       </PieChart>
     </div>
   );

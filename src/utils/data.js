@@ -34,18 +34,18 @@ const data = [
 
 
 const monthlyProductionData = [
-  {month: "Jan", productionCurrentYear: 400, productionLastYear: 240},
-  {month: "Feb", productionCurrentYear: 300, productionLastYear: 139},
-  {month: "Mar", productionCurrentYear: 200, productionLastYear: 980},
-  {month: "Apr", productionCurrentYear: 278, productionLastYear: 390},
-  {month: "May", productionCurrentYear: 189, productionLastYear: 480},
-  {month: "Jun", productionCurrentYear: 239, productionLastYear: 380},
-  {month: "Jul", productionCurrentYear: 349, productionLastYear: 430},
-  {month: "Aug", productionCurrentYear: 200, productionLastYear: 240},
-  {month: "Sep", productionCurrentYear: 278, productionLastYear: 139},
-  {month: "Oct", productionCurrentYear: 189, productionLastYear: 980},
-  {month: "Nov", productionCurrentYear: 239, productionLastYear: 390},
-  {month: "Dec", productionCurrentYear: 349, productionLastYear: 480},
+  {month: "Jan", ProductionCurrentYear: 400, ProductionLastYear: 240},
+  {month: "Feb", ProductionCurrentYear: 300, ProductionLastYear: 139},
+  {month: "Mar", ProductionCurrentYear: 200, ProductionLastYear: 980},
+  {month: "Apr", ProductionCurrentYear: 278, ProductionLastYear: 390},
+  {month: "May", ProductionCurrentYear: 189, ProductionLastYear: 480},
+  {month: "Jun", ProductionCurrentYear: 239, ProductionLastYear: 380},
+  {month: "Jul", ProductionCurrentYear: 349, ProductionLastYear: 430},
+  {month: "Aug", ProductionCurrentYear: 200, ProductionLastYear: 240},
+  {month: "Sep", ProductionCurrentYear: 278, ProductionLastYear: 139},
+  {month: "Oct", ProductionCurrentYear: 189, ProductionLastYear: 980},
+  {month: "Nov", ProductionCurrentYear: 239, ProductionLastYear: 390},
+  {month: "Dec", ProductionCurrentYear: 349, ProductionLastYear: 480},
 ];
 
 

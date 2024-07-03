@@ -6,6 +6,10 @@ const routes = [
     {
         route: '/user/monthly-dashboard',
         name: 'Monthly Dashboard',
+    },
+    {
+        route: '/user/data-entry',
+        name: 'Data Entry',
     }
 ]
 

@@ -8,6 +8,7 @@ import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ErrorAlert } from "@/components/ErrorAlert";
 
 import { useAuth } from "@/context/AuthContext";
 
@@ -36,7 +37,7 @@ export function UserAuthForm({ className, ...props }) {
   return (
     <div className={cn("grid gap-6", className)} {...props}>
       <form onSubmit={onSubmit}>
-        {error ? <div className="text-red-500">{error}</div> : null}
+        {error ? <ErrorAlert error={error}/> : null}
         <div className="grid gap-2">
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="email">

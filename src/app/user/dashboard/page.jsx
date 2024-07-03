@@ -31,8 +31,8 @@ export const columns = [
 const Dashboard = () => {
   return (
     <main>
-      <section id="dashboard" className="grid grid-cols-4 gap-4">
-        <Card className="shadow-md dark:bg-slate-900">
+      <section id="dashboard" className="grid grid-cols-12 gap-4">
+        <Card className="shadow-md dark:bg-slate-900 col-span-12 sm:col-span-3">
           <CardHeader>
             <CardTitle>Power Factor</CardTitle>
           </CardHeader>
@@ -44,7 +44,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-md dark:bg-slate-900">
+        <Card className="shadow-md dark:bg-slate-900 col-span-12 sm:col-span-3">
           <CardHeader>
             <CardTitle>CPT</CardTitle>
           </CardHeader>
@@ -56,7 +56,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-md dark:bg-slate-900">
+        <Card className="shadow-md dark:bg-slate-900 col-span-12 sm:col-span-3">
           <CardHeader>
             <CardTitle>Daily Labour Count</CardTitle>
           </CardHeader>
@@ -78,26 +78,26 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="row-span-2 shadow-md flex flex-col dark:bg-slate-900">
+      <Card className="sm:row-span-2 shadow-md flex flex-col dark:bg-slate-900 col-span-12 sm:col-span-3">
           <CardHeader className="p-0 text-center text-2xl font-semibold pt-3">
             Monthly Target
           </CardHeader>
-          <CardContent className="flex flex-col items-center justify-around h-full">
-            <div className="flex items-center gap-2 mt-2 w-full">
+          <CardContent className="flex sm:flex-col items-center justify-around h-full">
+            <div className="flex flex-col sm:flex-row items-center gap-2 mt-2 w-full">
               <Smileys value={gauge.rc} />
               <div className="grow">
                 <h1 className="text-3xl font-bold text-center">{gauge.rc}%</h1>
                 <h2 className="text-center">RC</h2>
               </div>
             </div>
-            <div className="flex items-center gap-2 mt-2 w-full">
+            <div className="flex flex-col sm:flex-row items-center gap-2 mt-2 w-full">
               <Smileys value={gauge.tp} />
               <div className="grow">
                 <h1 className="text-3xl font-bold text-center">{gauge.tp}%</h1>
                 <h2 className="text-center">TP</h2>
               </div>
             </div>
-            <div className="flex items-center gap-2 mt-2 w-full">
+            <div className="flex flex-col sm:flex-row items-center gap-2 mt-2 w-full">
               <Smileys value={gauge.cp} />
               <div className="grow">
                 <h1 className="text-3xl font-bold text-center">{gauge.cp}%</h1>
@@ -107,7 +107,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <div className="col-span-3 grid grid-cols-4 gap-2">
+        <div className="col-span-12 sm:col-span-9 grid grid-cols-1 sm:grid-cols-4 gap-2">
           <Card className="flex flex-col min-h-60 dark:bg-slate-900">
             <CardHeader className="text-center pb-0 font-bold text-xl">
               RC
@@ -142,7 +142,7 @@ const Dashboard = () => {
 
         <div
           id="last-row"
-          className="grid grid-cols-4 justify-evenly col-span-4 gap-2"
+          className="grid grid-cols-1 sm:grid-cols-4 justify-evenly col-span-12 gap-2"
         >
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">Total</CardHeader>
@@ -169,9 +169,9 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
-        <Card className="shadow-md col-span-4 rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+        <Card className="shadow-md col-span-12 rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
           <CardHeader className="font-semibold p-2 text-lg">Down Time</CardHeader>
-          <DownTimeChart width={1250} />
+          <DownTimeChart width={window.innerWidth < 640 ? 400 : 1250} />
         </Card>
       </section>
     </main>

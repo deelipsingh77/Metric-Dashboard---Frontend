@@ -16,6 +16,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faHamburger } from "@fortawesome/free-solid-svg-icons";
 
 const NavBar = () => {
   const path = usePathname();
@@ -33,7 +35,26 @@ const NavBar = () => {
   return (
     <nav>
       <div className="flex justify-between gap-2 items-center mx-4">
-        <h1 className="text-3xl font-bold p-1 min-w-max">{title}</h1>
+        <div className="flex items-center gap-2">
+          <div className="sm:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <FontAwesomeIcon icon={faBars} />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Menu</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {routes.map((route) => (
+                  <DropdownMenuItem key={route.route}>
+                    <Link href={route.route}>{route.name}</Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <h1 className="text-3xl font-bold p-1 min-w-max">{title}</h1>
+        </div>
         {/* <ul className="flex justify-center gap-6 items-center grow">
           {routes.map((route) => (
             <li key={route.route}>

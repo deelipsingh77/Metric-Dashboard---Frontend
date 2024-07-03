@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faHamburger } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faHamburger, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const NavBar = () => {
   const path = usePathname();
@@ -80,7 +80,7 @@ const NavBar = () => {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <div className="flex justify-center items-center gap-3">
-                {user?.photoURL && (
+                {user?.photoURL ? (
                   <Image
                     width={30}
                     height={30}
@@ -88,12 +88,14 @@ const NavBar = () => {
                     alt="Profile Pic"
                     className="rounded-full"
                   />
+                ) : (
+                  <FontAwesomeIcon icon={faUser} />
                 )}
-                <div>{user?.displayName || user?.email}</div>
+                {/* <div>{user?.displayName || user?.email}</div> */}
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>{user?.displayName || user?.email}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <button onClick={() => logout()}>Logout</button>

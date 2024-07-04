@@ -1,14 +1,12 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { addDoc, Timestamp } from "firebase/firestore";
 import { monthlyTargetCollectionRef } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useProduction } from "@/context/ProductionContext";
 import { SuccessAlert } from "@/components/SuccessAlert";
-
 import {
   Select,
   SelectContent,
@@ -16,28 +14,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
-const ManPower = () => {
+const MonthlyTarget = () => {
   const [showAlert, setShowAlert] = useState(false);
-  const [month, setMonth ] = useState("")
-  const [year, setYear] = useState("");
   const [rcTarget, setRcTarget] = useState("");
   const [tpTarget, setTpTarget] = useState("");
   const [cpTarget, setCpTarget] = useState("");
 
   const { user } = useAuth();
-  const { getManpower } = useProduction();
+  const { getMonthlyTarget, totalMonthlyTarget } = useProduction();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const now = new Date();
     const timestamp = Timestamp.fromDate(now);
     const data = {
-      month: month,
-      year: year,
-      rcTarget: rcTarget,
-      tpTarget: tpTarget,
-      cpTarget: cpTarget,
+      rcTarget,
+      tpTarget,
+      cpTarget,
       userId: user?.uid,
       createdAt: timestamp,
     };
@@ -47,59 +57,31 @@ const ManPower = () => {
       console.log(e.message);
     }
 
-    setMonth("");
-    setYear("");
     setRcTarget("");
     setTpTarget("");
     setCpTarget("");
-    setShowAlert((prev) => !prev);
+    setShowAlert(true);
     setTimeout(() => {
-      setShowAlert(() => false);
+      setShowAlert(false);
     }, 3000);
-    getManpower();
+    getMonthlyTarget();
   };
 
   return (
-    <main className="h-[calc(100vh-100px)] relative flex justify-center items-center">
-      <div>
-        {showAlert && <SuccessAlert />}
-        <Card className="p-5">
-          <CardTitle className="text-center mb-4 text-4xl">
-            Monthly Target
-          </CardTitle>
+    <main className="relative flex flex-col h-screen">
+      {showAlert && <SuccessAlert />}
+      <Dialog>
+        <DialogTrigger>
+          <Button>Add Monthly Target</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Monthly Target Data Entry</DialogTitle>
+            <DialogDescription>
+              Fill in the details below to submit monthly target data.
+            </DialogDescription>
+          </DialogHeader>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <div className="flex gap-4">
-              <Select onValueChange={(value) => setMonth(value)}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Month" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="january">January</SelectItem>
-                  <SelectItem value="february">February</SelectItem>
-                  <SelectItem value="march">March</SelectItem>
-                  <SelectItem value="april">April</SelectItem>
-                  <SelectItem value="may">May</SelectItem>
-                  <SelectItem value="june">June</SelectItem>
-                  <SelectItem value="july">July</SelectItem>
-                  <SelectItem value="august">August</SelectItem>
-                  <SelectItem value="september">September</SelectItem>
-                  <SelectItem value="october">October</SelectItem>
-                  <SelectItem value="november">November</SelectItem>
-                  <SelectItem value="december">December</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Input
-                id="year"
-                placeholder="Year"
-                type="number"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                autoCapitalize="none"
-                autoCorrect="off"
-              />
-
-            </div>
             <div className="flex flex-col gap-4">
               <Input
                 id="rcTarget"
@@ -131,9 +113,35 @@ const ManPower = () => {
             </div>
             <Button type="submit">Submit</Button>
           </form>
-        </Card>
+        </DialogContent>
+      </Dialog>
+
+      <div className="w-full px-4 shadow-lg rounded-xl mt-8 flex-grow">
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow>
+              <TableHead>RC Target</TableHead>
+              <TableHead>TP Target</TableHead>
+              <TableHead>CP Target</TableHead>
+              <TableHead>Created At</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {totalMonthlyTarget?.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.rcTarget}</TableCell>
+                <TableCell>{item.tpTarget}</TableCell>
+                <TableCell>{item.cpTarget}</TableCell>
+                <TableCell>
+                  {new Date(item.createdAt.seconds * 1000).toLocaleDateString()}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </main>
   );
 };
-export default ManPower;
+
+export default MonthlyTarget;

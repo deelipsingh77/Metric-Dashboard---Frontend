@@ -14,8 +14,9 @@ export const ProductionProvider = ({ children }) => {
   const [totalProduction, setTotalProduction] = useState(null);
   const [manpower, setManpower] = useState([]);
   const [totalManpower, setTotalManpower] = useState(null);
-  
+
   const [monthlyTarget, setMonthlyTarget] = useState([]);
+  const [totalMonthlyTarget, setTotalMonthlyTarget] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,6 +46,22 @@ export const ProductionProvider = ({ children }) => {
       }));
       setTotalManpower(manpowerData);
       console.log(manpowerData);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getMonthlyTarget = async () => {
+    try {
+      const data = await getDocs(monthlyTargetCollectionRef);
+      const monthlyTargetData = data.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setTotalMonthlyTarget(monthlyTargetData);
+      console.log(monthlyTargetData);
     } catch (error) {
       setError(error);
     } finally {
@@ -134,28 +151,32 @@ export const ProductionProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-
   };
 
   useEffect(() => {
     getProduction();
+    getManpower();
+    getMonthlyTarget();
   }, []);
 
   useEffect(() => {
     fetchLatestProductionData();
     fetchLatestManpowerData();
     fetchLatestMonthlyTargetData();
-  }, [totalProduction, totalManpower]);
+  }, [totalProduction, totalManpower, totalMonthlyTarget]);
 
   const value = {
     production,
     manpower,
+    totalManpower,
     monthlyTarget,
+    totalMonthlyTarget,
     totalProduction,
     loading,
     error,
     getProduction,
     getManpower,
+    getMonthlyTarget,
   };
 
   return (

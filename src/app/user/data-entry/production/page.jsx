@@ -1,13 +1,28 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { addDoc, Timestamp } from "firebase/firestore";
 import { productionCollectionRef } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useProduction } from "@/context/ProductionContext";
 import { SuccessAlert } from "@/components/SuccessAlert";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const DataEntry = () => {
   const [rc, setRc] = useState("");
@@ -19,7 +34,7 @@ const DataEntry = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const { user } = useAuth();
-  const { getProduction } = useProduction();
+  const { getProduction, totalProduction } = useProduction();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -48,19 +63,27 @@ const DataEntry = () => {
     setCpTarget("");
     setRcTarget("");
 
-    setShowAlert((prev) => !prev);
+    setShowAlert(true);
     setTimeout(() => {
-      setShowAlert(()=>false);
+      setShowAlert(false);
     }, 3000);
     getProduction();
   };
 
   return (
-    <main className="h-[calc(100vh-100px)] relative flex justify-center items-center">
-      <div>
+    <main className="relative flex flex-col">
       {showAlert && <SuccessAlert />}
-        <Card className="p-5">
-          <CardTitle className="text-center mb-4 text-4xl">Production Data</CardTitle>
+      <Dialog>
+        <DialogTrigger>
+          <Button>Add Production Data</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Production Data Entry</DialogTitle>
+            <DialogDescription>
+              Fill in the details below to submit production data.
+            </DialogDescription>
+          </DialogHeader>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex gap-4">
               <Input
@@ -74,7 +97,7 @@ const DataEntry = () => {
               />
               <Input
                 id="rcTarget"
-                placeholder="Target"
+                placeholder="RC Target"
                 type="number"
                 value={rcTarget}
                 onChange={(e) => setRcTarget(e.target.value)}
@@ -94,7 +117,7 @@ const DataEntry = () => {
               />
               <Input
                 id="tpTarget"
-                placeholder="Target"
+                placeholder="TP Target"
                 type="number"
                 value={tpTarget}
                 onChange={(e) => setTpTarget(e.target.value)}
@@ -114,7 +137,7 @@ const DataEntry = () => {
               />
               <Input
                 id="cpTarget"
-                placeholder="Target"
+                placeholder="CP Target"
                 type="number"
                 value={cpTarget}
                 onChange={(e) => setCpTarget(e.target.value)}
@@ -124,9 +147,41 @@ const DataEntry = () => {
             </div>
             <Button type="submit">Submit</Button>
           </form>
-        </Card>
+        </DialogContent>
+      </Dialog>
+
+      <div className="w-full px-4 shadow-lg rounded-xl">
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow>
+              <TableHead>RC</TableHead>
+              <TableHead>RC Target</TableHead>
+              <TableHead>TP</TableHead>
+              <TableHead>TP Target</TableHead>
+              <TableHead>CP</TableHead>
+              <TableHead>CP Target</TableHead>
+              <TableHead>Created At</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {totalProduction.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.rc}</TableCell>
+                <TableCell>{item.rcTarget}</TableCell>
+                <TableCell>{item.tp}</TableCell>
+                <TableCell>{item.tpTarget}</TableCell>
+                <TableCell>{item.cp}</TableCell>
+                <TableCell>{item.cpTarget}</TableCell>
+                <TableCell>
+                  {new Date(item.createdAt.seconds * 1000).toLocaleDateString()}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </main>
   );
 };
+
 export default DataEntry;

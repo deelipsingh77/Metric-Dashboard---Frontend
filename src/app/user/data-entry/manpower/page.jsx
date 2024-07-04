@@ -1,25 +1,37 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { addDoc, Timestamp } from "firebase/firestore";
 import { manpowerCollectionRef } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useProduction } from "@/context/ProductionContext";
 import { SuccessAlert } from "@/components/SuccessAlert";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const ManPower = () => {
   const [rc, setRc] = useState("");
-  const [rcTarget, setRcTarget] = useState("");
   const [tp, setTp] = useState("");
-  const [tpTarget, setTpTarget] = useState("");
   const [cp, setCp] = useState("");
-  const [cpTarget, setCpTarget] = useState("");
   const [showAlert, setShowAlert] = useState(false);
 
   const { user } = useAuth();
-  const { getManpower } = useProduction();
+  const { getManpower, totalManpower } = useProduction();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -27,11 +39,8 @@ const ManPower = () => {
     const timestamp = Timestamp.fromDate(now);
     const data = {
       rc,
-      rcTarget,
       tp,
-      tpTarget,
       cp,
-      cpTarget,
       userId: user?.uid,
       createdAt: timestamp,
     };
@@ -44,23 +53,28 @@ const ManPower = () => {
     setTp("");
     setCp("");
     setRc("");
-    setTpTarget("");
-    setCpTarget("");
-    setRcTarget("");
 
     setShowAlert((prev) => !prev);
     setTimeout(() => {
-      setShowAlert(()=>false);
+      setShowAlert(() => false);
     }, 3000);
     getManpower();
   };
 
   return (
-    <main className="h-[calc(100vh-100px)] relative flex justify-center items-center">
-      <div>
+    <main className="relative flex flex-col h-screen">
       {showAlert && <SuccessAlert />}
-        <Card className="p-5">
-          <CardTitle className="text-center mb-4 text-4xl">Manpower Data</CardTitle>
+      <Dialog>
+        <DialogTrigger>
+          <Button>Add Manpower Data</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Manpower Data Entry</DialogTitle>
+            <DialogDescription>
+              Fill in the details below to submit manpower data.
+            </DialogDescription>
+          </DialogHeader>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex gap-4">
               <Input
@@ -69,15 +83,6 @@ const ManPower = () => {
                 type="text"
                 value={rc}
                 onChange={(e) => setRc(e.target.value)}
-                autoCapitalize="none"
-                autoCorrect="off"
-              />
-              <Input
-                id="rcTarget"
-                placeholder="Target"
-                type="number"
-                value={rcTarget}
-                onChange={(e) => setRcTarget(e.target.value)}
                 autoCapitalize="none"
                 autoCorrect="off"
               />
@@ -92,15 +97,6 @@ const ManPower = () => {
                 autoCapitalize="none"
                 autoCorrect="off"
               />
-              <Input
-                id="tpTarget"
-                placeholder="Target"
-                type="number"
-                value={tpTarget}
-                onChange={(e) => setTpTarget(e.target.value)}
-                autoCapitalize="none"
-                autoCorrect="off"
-              />
             </div>
             <div className="flex gap-4">
               <Input
@@ -112,21 +108,39 @@ const ManPower = () => {
                 autoCapitalize="none"
                 autoCorrect="off"
               />
-              <Input
-                id="cpTarget"
-                placeholder="Target"
-                type="number"
-                value={cpTarget}
-                onChange={(e) => setCpTarget(e.target.value)}
-                autoCapitalize="none"
-                autoCorrect="off"
-              />
             </div>
             <Button type="submit">Submit</Button>
           </form>
-        </Card>
+        </DialogContent>
+      </Dialog>
+
+      <div className="w-full px-4 shadow-lg rounded-xl mt-8 flex-grow">
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow>
+              <TableHead>RC</TableHead>
+              <TableHead>TP</TableHead>
+              <TableHead>CP</TableHead>
+              <TableHead>Created At</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {totalManpower?.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.rc}</TableCell>
+                <TableCell>{item.tp}</TableCell>
+                <TableCell>{item.cp}</TableCell>
+                <TableCell>
+                  {new Date(item.createdAt.seconds * 1000).toLocaleDateString()}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </main>
   );
 };
+
 export default ManPower;
+

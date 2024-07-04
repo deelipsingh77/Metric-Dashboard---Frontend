@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { addDoc, Timestamp } from "firebase/firestore";
-import { productionCollectionRef } from "@/config/firebase";
+import { manpowerCollectionRef } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useProduction } from "@/context/ProductionContext";
 import { SuccessAlert } from "@/components/SuccessAlert";
@@ -19,7 +19,7 @@ const ManPower = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const { user } = useAuth();
-  const { getProduction } = useProduction();
+  const { getManpower } = useProduction();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -36,7 +36,7 @@ const ManPower = () => {
       createdAt: timestamp,
     };
     try {
-      await addDoc(productionCollectionRef, data);
+      await addDoc(manpowerCollectionRef, data);
     } catch (e) {
       console.log(e.message);
     }
@@ -52,7 +52,7 @@ const ManPower = () => {
     setTimeout(() => {
       setShowAlert(()=>false);
     }, 3000);
-    getProduction();
+    getManpower();
   };
 
   return (

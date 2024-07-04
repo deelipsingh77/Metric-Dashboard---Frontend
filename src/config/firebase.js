@@ -20,3 +20,5 @@ export const db = getFirestore(app);
 
 export const productionCollectionRef = collection(db, "production");
 export const usersCollectionRef = collection(db, "users");
+export const manpowerCollectionRef = collection(db, "manpower");
+export const monthlyTargetCollectionRef = collection(db, "monthlyTarget");

@@ -30,7 +30,6 @@ const NavBar = () => {
     const subRoute = routes.find((route) =>
       route.subRoutes?.find((subRoute) => subRoute.route === path)
     );
-    console.log(subRoute);
     if (route) {
       setTitle(route.name);
     } else {

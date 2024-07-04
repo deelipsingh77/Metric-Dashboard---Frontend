@@ -15,6 +15,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faHamburger, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -56,11 +59,26 @@ const NavBar = () => {
               <DropdownMenuContent>
                 <DropdownMenuLabel>Menu</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {routes.map((route) => (
-                  <DropdownMenuItem key={route.route}>
-                    <Link href={route.route}>{route.name}</Link>
-                  </DropdownMenuItem>
-                ))}
+                {routes.map((route) =>
+                  route.subRoutes ? (
+                    <DropdownMenuSub key={route.route}>
+                      <DropdownMenuSubTrigger>
+                        {route.name}
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        {route.subRoutes.map((subRoute) => (
+                          <DropdownMenuItem key={subRoute.route}>
+                            <Link href={subRoute.route}>{subRoute.name}</Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                  ) : (
+                    <DropdownMenuItem key={route.route}>
+                      <Link href={route.route}>{route.name}</Link>
+                    </DropdownMenuItem>
+                  )
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -27,8 +27,21 @@ const NavBar = () => {
   useEffect(() => {
     // Find the route object that matches the current path
     const route = routes.find((route) => route.route === path);
+    const subRoute = routes.find((route) =>
+      route.subRoutes?.find((subRoute) => subRoute.route === path)
+    );
+    console.log(subRoute);
     if (route) {
-      setTitle(route.name); // Set the title based on matched route
+      setTitle(route.name);
+    } else {
+      routes.forEach((route) => {
+        const subRoute = route.subRoutes?.find(
+          (subRoute) => subRoute.route === path
+        );
+        if (subRoute) {
+          setTitle(subRoute.name);
+        }
+      });
     }
   }, [path]);
 
@@ -95,7 +108,9 @@ const NavBar = () => {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuLabel>{user?.displayName || user?.email}</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                {user?.displayName || user?.email}
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <button onClick={() => logout()}>Logout</button>

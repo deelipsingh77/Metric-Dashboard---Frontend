@@ -1,12 +1,13 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { useEffect, useState } from "react";
-import { addDoc, getDocs, Timestamp } from "firebase/firestore";
+import { Card, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { addDoc, Timestamp } from "firebase/firestore";
 import { productionCollectionRef } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useProduction } from "@/context/ProductionContext";
+import { SuccessAlert } from "@/components/SuccessAlert";
 
 const DataEntry = () => {
   const [rc, setRc] = useState("");
@@ -15,6 +16,7 @@ const DataEntry = () => {
   const [tpTarget, setTpTarget] = useState("");
   const [cp, setCp] = useState("");
   const [cpTarget, setCpTarget] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const { user } = useAuth();
   const { getProduction } = useProduction();
@@ -33,14 +35,32 @@ const DataEntry = () => {
       userId: user?.uid,
       createdAt: timestamp,
     };
-    await addDoc(productionCollectionRef, data);
+    try {
+      await addDoc(productionCollectionRef, data);
+    } catch (e) {
+      console.log(e.message);
+    }
+
+    setTp("");
+    setCp("");
+    setRc("");
+    setTpTarget("");
+    setCpTarget("");
+    setRcTarget("");
+
+    setShowAlert((prev) => !prev);
+    setTimeout(() => {
+      setShowAlert(()=>false);
+    }, 3000);
     getProduction();
   };
 
   return (
-    <main className="h-[calc(100vh-100px)] flex justify-center items-center">
+    <main className="h-[calc(100vh-100px)] relative flex justify-center items-center">
       <div>
+      {showAlert && <SuccessAlert />}
         <Card className="p-5">
+          <CardTitle className="text-center mb-4 text-4xl">Production Data</CardTitle>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex gap-4">
               <Input

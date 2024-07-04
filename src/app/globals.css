@@ -80,5 +80,6 @@
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
+  padding-right: 1rem !important;
   /* background-color: red; */
 }

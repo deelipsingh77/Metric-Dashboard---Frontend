@@ -157,25 +157,25 @@ const Dashboard = () => {
         >
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">Total</CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               <BarGraph monthlyProductionData={monthlyProductionData} />
             </CardContent>
           </Card>
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">RC</CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               <BarGraph monthlyProductionData={monthlyProductionData} />
             </CardContent>
           </Card>
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">TP</CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               <BarGraph monthlyProductionData={monthlyProductionData} />
             </CardContent>
           </Card>
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">CP</CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               <BarGraph monthlyProductionData={monthlyProductionData} />
             </CardContent>
           </Card>

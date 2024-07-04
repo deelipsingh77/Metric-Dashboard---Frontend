@@ -23,7 +23,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 const BarGraph = ({ monthlyProductionData, width }) => {
   return (
-    <div className="pr-4">
+    <div className="">
       <BarChart data={monthlyProductionData} width={width || 300} height={250}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="month" />

@@ -49,4 +49,8 @@ const monthlyProductionData = [
 ];
 
 
-export { gauge, data, monthlyProductionData };
+const machinePackingData = [
+  {month: "Jan", monthlyTarget: 400, monthlyProduction: 240, dailyProduction: 100, dailyTarget: 200},
+];
+
+export { gauge, data, monthlyProductionData, machinePackingData };

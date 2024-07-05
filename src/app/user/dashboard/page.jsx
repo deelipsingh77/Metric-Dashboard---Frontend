@@ -7,9 +7,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Smileys from "@/components/Smileys";
-import { monthlyProductionData } from "@/utils/data";
+import { monthlyProductionData, machinePackingData } from "@/utils/data";
 import DownTimeChart from "@/components/DownTimeChart";
 import BarGraph from "@/components/BarGraph";
+import MachineBarGraph from "@/components/MachineBarGraph";
 import NeedlePieChart from "@/components/NeedlePieChart";
 import { DataTable } from "@/components/DataTable";
 import { useProduction } from "@/context/ProductionContext";
@@ -39,7 +40,7 @@ const Dashboard = () => {
   const [tpMonthlyTarget, setTpMonthlyTarget] = useState(null);
   const [cpMonthlyTarget, setCpMonthlyTarget] = useState(null);
 
-const getMonthlyTarget = () => {
+  const getMonthlyTarget = () => {
     if (!monthlyTarget[0]) return;
     const currentMonth = new Date(monthlyTarget[0].createdAt.toDate());
     const filteredTotalProduction = totalProduction.filter((item) =>
@@ -99,33 +100,77 @@ const getMonthlyTarget = () => {
   return (
     <main>
       <section id="dashboard" className="grid grid-cols-12 gap-4">
+        <div className="col-span-3 grid grid-cols-2 gap-4">
+          <Card className="shadow-md dark:bg-slate-900 col-span-12 sm:col-span-1">
+            <CardHeader>
+              <CardTitle>PF</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-3xl">99</CardDescription>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-md dark:bg-slate-900 col-span-12 sm:col-span-1">
+            <CardHeader>
+              <CardTitle>CPT</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-3xl">14.5</CardDescription>
+            </CardContent>
+          </Card>
+        </div>
+
         <Card className="shadow-md dark:bg-slate-900 col-span-12 sm:col-span-3">
           <CardHeader>
-            <CardTitle>Power Factor</CardTitle>
+            <CardTitle>Daily Packing Manpower</CardTitle>
           </CardHeader>
           <CardContent>
-            <CardDescription>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac
-              erat nec felis ultricies rutrum.
+            <CardDescription className="w-full">
+              <DataTable
+                columns={[
+                  {
+                    accessorKey: "m1",
+                    header: "M1",
+                  },
+                  {
+                    accessorKey: "m2",
+                    header: "M2",
+                  },
+                  {
+                    accessorKey: "m3",
+                    header: "M3",
+                  },
+                  {
+                    accessorKey: "m4",
+                    header: "M4",
+                  },
+                  {
+                    accessorKey: "m5",
+                    header: "M5",
+                  },
+                  {
+                    accessorKey: "m6",
+                    header: "M6",
+                  },
+                ]}
+                data={[
+                  {
+                    m1: 45,
+                    m2: 50,
+                    m3: 60,
+                    m4: 70,
+                    m5: 80,
+                    m6: 90,
+                  },
+                ]}
+              />
             </CardDescription>
           </CardContent>
         </Card>
 
         <Card className="shadow-md dark:bg-slate-900 col-span-12 sm:col-span-3">
           <CardHeader>
-            <CardTitle>CPT</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac
-              erat nec felis ultricies rutrum.
-            </CardDescription>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-md dark:bg-slate-900 col-span-12 sm:col-span-3">
-          <CardHeader>
-            <CardTitle>Daily Labour Count</CardTitle>
+            <CardTitle>Daily Production Manpower</CardTitle>
           </CardHeader>
           <CardContent>
             {/* <CardDescription>
@@ -153,21 +198,27 @@ const getMonthlyTarget = () => {
             <div className="flex flex-col sm:flex-row items-center gap-2 mt-2 w-full">
               <Smileys value={rcMonthlyTarget} />
               <div className="grow">
-                <h1 className="text-3xl font-bold text-center">{parseInt(rcMonthlyTarget)}%</h1>
+                <h1 className="text-3xl font-bold text-center">
+                  {parseInt(rcMonthlyTarget)}%
+                </h1>
                 <h2 className="text-center">RC</h2>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2 mt-2 w-full">
               <Smileys value={tpMonthlyTarget} />
               <div className="grow">
-                <h1 className="text-3xl font-bold text-center">{parseInt(tpMonthlyTarget)}%</h1>
+                <h1 className="text-3xl font-bold text-center">
+                  {parseInt(tpMonthlyTarget)}%
+                </h1>
                 <h2 className="text-center">TP</h2>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2 mt-2 w-full">
               <Smileys value={cpMonthlyTarget} />
               <div className="grow">
-                <h1 className="text-3xl font-bold text-center">{parseInt(cpMonthlyTarget)}%</h1>
+                <h1 className="text-3xl font-bold text-center">
+                  {parseInt(cpMonthlyTarget)}%
+                </h1>
                 <h2 className="text-center">CP</h2>
               </div>
             </div>
@@ -184,7 +235,8 @@ const getMonthlyTarget = () => {
               total={productionData.rcTarget}
             />
             <h1 className="text-center text-2xl font-bold pb-4">
-              {productionData.rc}
+              {productionData.rcTarget} <sub>T</sub> / {productionData.rc}{" "}
+              <sub>P</sub>
             </h1>
           </Card>
           <Card className="flex flex-col min-h-60 dark:bg-slate-900">
@@ -196,7 +248,8 @@ const getMonthlyTarget = () => {
               total={productionData.tpTarget}
             />
             <h1 className="text-center text-2xl font-bold pb-4">
-              {productionData.tp}
+              {productionData.tpTarget} <sub>T</sub> / {productionData.tp}{" "}
+              <sub>P</sub>
             </h1>
           </Card>
           <Card className="flex flex-col min-h-60 dark:bg-slate-900">
@@ -208,7 +261,8 @@ const getMonthlyTarget = () => {
               total={productionData.cpTarget}
             />
             <h1 className="text-center text-2xl font-bold pb-4">
-              {productionData.cp}
+              {productionData.cpTarget} <sub>T</sub> / {productionData.cp}{" "}
+              <sub>P</sub>
             </h1>
           </Card>
           <Card className="flex flex-col min-h-60 dark:bg-slate-900">
@@ -224,8 +278,55 @@ const getMonthlyTarget = () => {
               }
             />
             <h1 className="text-center text-2xl font-bold pb-4">
-              {productionData.tp + productionData.rc + productionData.cp}
+              {productionData.tpTarget +
+                productionData.rcTarget +
+                productionData.cpTarget}{" "}
+              <sub>T</sub> /{" "}
+              {productionData.tp + productionData.rc + productionData.cp}{" "}
+              <sub>P</sub>
             </h1>
+          </Card>
+        </div>
+
+        <div
+          id="last-row"
+          className="grid grid-cols-1 sm:grid-cols-6 justify-evenly col-span-12 gap-4"
+        >
+          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+            <CardHeader className="font-semibold p-2 text-lg">M1</CardHeader>
+            <CardContent className="p-0">
+              <MachineBarGraph monthlyProductionData={machinePackingData} />
+            </CardContent>
+          </Card>
+          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+            <CardHeader className="font-semibold p-2 text-lg">M2</CardHeader>
+            <CardContent className="p-0">
+              <MachineBarGraph monthlyProductionData={machinePackingData} />
+            </CardContent>
+          </Card>
+          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+            <CardHeader className="font-semibold p-2 text-lg">M3</CardHeader>
+            <CardContent className="p-0">
+              <MachineBarGraph monthlyProductionData={machinePackingData} />
+            </CardContent>
+          </Card>
+          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+            <CardHeader className="font-semibold p-2 text-lg">M4</CardHeader>
+            <CardContent className="p-0">
+              <MachineBarGraph monthlyProductionData={machinePackingData} />
+            </CardContent>
+          </Card>
+          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+            <CardHeader className="font-semibold p-2 text-lg">M5</CardHeader>
+            <CardContent className="p-0">
+              <MachineBarGraph monthlyProductionData={machinePackingData} />
+            </CardContent>
+          </Card>
+          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+            <CardHeader className="font-semibold p-2 text-lg">M6</CardHeader>
+            <CardContent className="p-0">
+              <MachineBarGraph monthlyProductionData={machinePackingData} />
+            </CardContent>
           </Card>
         </div>
 
@@ -260,7 +361,13 @@ const getMonthlyTarget = () => {
         </div>
         <Card className="shadow-md col-span-12 rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
           <CardHeader className="font-semibold p-2 text-lg">
-            Down Time
+            Production Down Time
+          </CardHeader>
+          <DownTimeChart width={window.innerWidth < 640 ? 350 : 1250} />
+        </Card>
+        <Card className="shadow-md col-span-12 rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
+          <CardHeader className="font-semibold p-2 text-lg">
+            Packing Down Time
           </CardHeader>
           <DownTimeChart width={window.innerWidth < 640 ? 350 : 1250} />
         </Card>

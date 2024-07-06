@@ -100,8 +100,8 @@ const Dashboard = () => {
   return (
     <main>
       <section id="dashboard" className="grid grid-cols-12 gap-4">
-        <div className="col-span-3 grid grid-cols-2 gap-4">
-          <Card className="shadow-md dark:bg-slate-900 col-span-12 sm:col-span-1">
+        <div className="col-span-12 sm:col-span-3 grid grid-cols-2 gap-4">
+          <Card className="shadow-md dark:bg-slate-900 col-span-1 sm:col-span-1">
             <CardHeader>
               <CardTitle>PF</CardTitle>
             </CardHeader>
@@ -110,7 +110,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="shadow-md dark:bg-slate-900 col-span-12 sm:col-span-1">
+          <Card className="shadow-md dark:bg-slate-900 col-span-1 sm:col-span-1">
             <CardHeader>
               <CardTitle>CPT</CardTitle>
             </CardHeader>
@@ -290,7 +290,7 @@ const Dashboard = () => {
 
         <div
           id="last-row"
-          className="grid grid-cols-1 sm:grid-cols-6 justify-evenly col-span-12 gap-4"
+          className="grid grid-cols-2 sm:grid-cols-6 justify-evenly col-span-12 gap-4"
         >
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">M1</CardHeader>

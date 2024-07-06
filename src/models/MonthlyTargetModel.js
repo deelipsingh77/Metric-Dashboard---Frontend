@@ -14,6 +14,7 @@ const monthlyTargetSchema = z.object({
   rcTarget: z.number().nonnegative(),
   tpTarget: z.number().nonnegative(),
   cpTarget: z.number().nonnegative(),
+  userId: z.string(),
   createdAt: z.instanceof(Date),
 });
 
@@ -26,6 +27,7 @@ export default class MonthlyTarget {
         rcTarget: Number(data.rcTarget),
         tpTarget: Number(data.tpTarget),
         cpTarget: Number(data.cpTarget),
+        userId: data.userId,
         createdAt: new Date(),
       });
       validatedData.createdAt = Timestamp.fromDate(new Date());

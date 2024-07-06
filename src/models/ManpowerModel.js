@@ -14,6 +14,7 @@ const manpowerSchema = z.object({
   rc: z.number().nonnegative(),
   tp: z.number().nonnegative(),
   cp: z.number().nonnegative(),
+  userId: z.string(),
   createdAt: z.instanceof(Date),
 });
 
@@ -26,6 +27,7 @@ export default class Manpower {
         rc: Number(data.rc),
         tp: Number(data.tp),
         cp: Number(data.cp),
+        userId: data.userId,
         createdAt: new Date(),
       });
       validatedData.createdAt = Timestamp.fromDate(new Date());

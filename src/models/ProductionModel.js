@@ -17,6 +17,7 @@ const productionSchema = z.object({
   tpTarget: z.number().nonnegative(),
   cp: z.number().nonnegative(),
   cpTarget: z.number().nonnegative(),
+  userId: z.string(),
   createdAt: z.instanceof(Date),
 });
 
@@ -33,6 +34,7 @@ export default class Production {
         tpTarget: Number(data.tpTarget),
         cp: Number(data.cp),
         cpTarget: Number(data.cpTarget),
+        userId: data.userId,
         createdAt: new Date(),
       });
       validatedData.createdAt = Timestamp.fromDate(new Date());

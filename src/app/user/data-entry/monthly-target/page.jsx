@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useProduction } from "@/context/ProductionContext";
+import { useGlobal } from "@/context/GlobalContext";
 import { SuccessAlert } from "@/components/SuccessAlert";
 import {
   Table,
@@ -32,7 +32,7 @@ const MonthlyTargetPage = () => {
   const [cpTarget, setCpTarget] = useState("");
 
   const { user } = useAuth();
-  const { getMonthlyTarget, totalMonthlyTarget, error, setError } = useProduction();
+  const { getMonthlyTarget, totalMonthlyTarget, error, setError } = useGlobal();
 
   const resetForm = () => {
     setRcTarget("");

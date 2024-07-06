@@ -1,13 +1,13 @@
 import NavBar from "@/components/NavBar";
 import { Sidebar } from "@/components/Sidebar";
-import { ProductionProvider } from "@/context/ProductionContext";
+import { GlobalProvider } from "@/context/GlobalContext";
 import ProtectedRoute from "@/utils/ProtectedRoute";
 
 const UserLayout = ({ children }) => {
   return (
     <>
       <ProtectedRoute>
-        <ProductionProvider>
+        <GlobalProvider>
           <header>
             <NavBar />
           </header>
@@ -19,7 +19,7 @@ const UserLayout = ({ children }) => {
               {children}
             </div>
           </div>
-        </ProductionProvider>
+        </GlobalProvider>
       </ProtectedRoute>
     </>
   );

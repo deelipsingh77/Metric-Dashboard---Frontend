@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useProduction } from "@/context/ProductionContext";
+import { useGlobal } from "@/context/GlobalContext";
 import { SuccessAlert } from "@/components/SuccessAlert";
 import {
   Table,
@@ -31,7 +31,7 @@ const ManPower = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const { user } = useAuth();
-  const { getManpower, totalManpower, error, setError } = useProduction();
+  const { getManpower, totalManpower, error, setError } = useGlobal();
 
   const resetForm = () => {
     setRc("");

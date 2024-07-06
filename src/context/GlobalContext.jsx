@@ -4,9 +4,9 @@ import Production from "@/models/ProductionModel";
 import MonthlyTarget from "@/models/MonthlyTargetModel";
 import { createContext, useContext, useEffect, useState } from "react";
 
-const ProductionContext = createContext();
+const GlobalContext = createContext();
 
-export const ProductionProvider = ({ children }) => {
+export const GlobalProvider = ({ children }) => {
   const [production, setProduction] = useState([]);
   const [totalProduction, setTotalProduction] = useState(null);
 
@@ -113,10 +113,10 @@ export const ProductionProvider = ({ children }) => {
   };
 
   return (
-    <ProductionContext.Provider value={value}>
+    <GlobalContext.Provider value={value}>
       {!loading && children}
-    </ProductionContext.Provider>
+    </GlobalContext.Provider>
   );
 };
 
-export const useProduction = () => useContext(ProductionContext);
+export const useGlobal = () => useContext(GlobalContext);

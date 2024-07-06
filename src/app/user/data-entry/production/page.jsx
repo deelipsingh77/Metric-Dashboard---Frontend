@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useProduction } from "@/context/ProductionContext";
+import { useGlobal } from "@/context/GlobalContext";
 import { SuccessAlert } from "@/components/SuccessAlert";
 import {
   Table,
@@ -34,7 +34,7 @@ const DataEntry = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const { user } = useAuth();
-  const { getProduction, totalProduction, error, setError } = useProduction();
+  const { getProduction, totalProduction, error, setError } = useGlobal();
 
   const resetForm = () => {
     setTp("");

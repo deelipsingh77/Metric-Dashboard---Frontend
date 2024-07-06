@@ -13,7 +13,7 @@ import BarGraph from "@/components/BarGraph";
 import MachineBarGraph from "@/components/MachineBarGraph";
 import NeedlePieChart from "@/components/NeedlePieChart";
 import { DataTable } from "@/components/DataTable";
-import { useProduction } from "@/context/ProductionContext";
+import { useGlobal } from "@/context/GlobalContext";
 import { useEffect, useState } from "react";
 import { isSameMonth } from "date-fns";
 
@@ -34,7 +34,7 @@ export const columns = [
 
 const Dashboard = () => {
   const { production, manpower, totalProduction, monthlyTarget } =
-    useProduction();
+    useGlobal();
 
   const [rcMonthlyTarget, setRcMonthlyTarget] = useState(null);
   const [tpMonthlyTarget, setTpMonthlyTarget] = useState(null);

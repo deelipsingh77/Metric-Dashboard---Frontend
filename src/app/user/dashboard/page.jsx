@@ -43,7 +43,7 @@ const Dashboard = () => {
   const getMonthlyTarget = () => {
     if (!monthlyTarget[0]) return;
     const currentMonth = new Date(monthlyTarget[0].createdAt.toDate());
-    const filteredTotalProduction = totalProduction.filter((item) =>
+    const filteredTotalProduction = totalProduction?.filter((item) =>
       isSameMonth(new Date(item.createdAt.toDate()), currentMonth)
     );
 

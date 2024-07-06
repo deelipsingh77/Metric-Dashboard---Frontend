@@ -2,18 +2,9 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { addDoc, Timestamp } from "firebase/firestore";
-import { monthlyTargetCollectionRef } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useProduction } from "@/context/ProductionContext";
 import { SuccessAlert } from "@/components/SuccessAlert";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -30,36 +21,41 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import MonthlyTarget from "@/models/MonthlyTargetModel";
+import { ErrorAlert } from "@/components/ErrorAlert";
 
-const MonthlyTarget = () => {
+
+const MonthlyTargetPage = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [rcTarget, setRcTarget] = useState("");
   const [tpTarget, setTpTarget] = useState("");
   const [cpTarget, setCpTarget] = useState("");
 
   const { user } = useAuth();
-  const { getMonthlyTarget, totalMonthlyTarget } = useProduction();
+  const { getMonthlyTarget, totalMonthlyTarget, error, setError } = useProduction();
+
+  const resetForm = () => {
+    setRcTarget("");
+    setTpTarget("");
+    setCpTarget("");
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const now = new Date();
-    const timestamp = Timestamp.fromDate(now);
     const data = {
       rcTarget,
       tpTarget,
       cpTarget,
       userId: user?.uid,
-      createdAt: timestamp,
     };
+
     try {
-      await addDoc(monthlyTargetCollectionRef, data);
+      await MonthlyTarget.addMonthlyTarget(data);
     } catch (e) {
-      console.log(e.message);
+      setError(e) 
     }
 
-    setRcTarget("");
-    setTpTarget("");
-    setCpTarget("");
+    resetForm();
     setShowAlert(true);
     setTimeout(() => {
       setShowAlert(false);
@@ -70,6 +66,7 @@ const MonthlyTarget = () => {
   return (
     <main className="relative flex flex-col h-screen">
       {showAlert && <SuccessAlert />}
+      {error && <ErrorAlert error={error} />}
       <Dialog>
         <DialogTrigger>
           <Button>Add Monthly Target</Button>
@@ -144,4 +141,4 @@ const MonthlyTarget = () => {
   );
 };
 
-export default MonthlyTarget;
+export default MonthlyTargetPage;

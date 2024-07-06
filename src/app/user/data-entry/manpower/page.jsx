@@ -2,8 +2,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { addDoc, Timestamp } from "firebase/firestore";
-import { manpowerCollectionRef } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useProduction } from "@/context/ProductionContext";
 import { SuccessAlert } from "@/components/SuccessAlert";
@@ -23,6 +21,8 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Manpower from "@/models/ManpowerModel";
+import { ErrorAlert } from "@/components/ErrorAlert";
 
 const ManPower = () => {
   const [rc, setRc] = useState("");
@@ -31,28 +31,30 @@ const ManPower = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const { user } = useAuth();
-  const { getManpower, totalManpower } = useProduction();
+  const { getManpower, totalManpower, error, setError } = useProduction();
+
+  const resetForm = () => {
+    setRc("");
+    setTp("");
+    setCp("");
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const now = new Date();
-    const timestamp = Timestamp.fromDate(now);
     const data = {
       rc,
       tp,
       cp,
       userId: user?.uid,
-      createdAt: timestamp,
     };
+
     try {
-      await addDoc(manpowerCollectionRef, data);
+      await Manpower.addManpower(data);
     } catch (e) {
-      console.log(e.message);
+      setError(e);
     }
 
-    setTp("");
-    setCp("");
-    setRc("");
+    resetForm();
 
     setShowAlert((prev) => !prev);
     setTimeout(() => {
@@ -64,6 +66,7 @@ const ManPower = () => {
   return (
     <main className="relative flex flex-col h-screen">
       {showAlert && <SuccessAlert />}
+      {error && <ErrorAlert error={error} />}
       <Dialog>
         <DialogTrigger>
           <Button>Add Manpower Data</Button>
@@ -143,4 +146,3 @@ const ManPower = () => {
 };
 
 export default ManPower;
-

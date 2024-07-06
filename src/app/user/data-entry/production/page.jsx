@@ -2,8 +2,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { addDoc, Timestamp } from "firebase/firestore";
-import { productionCollectionRef } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useProduction } from "@/context/ProductionContext";
 import { SuccessAlert } from "@/components/SuccessAlert";
@@ -23,6 +21,8 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Production from "@/models/ProductionModel";
+import { ErrorAlert } from "@/components/ErrorAlert";
 
 const DataEntry = () => {
   const [rc, setRc] = useState("");
@@ -34,12 +34,19 @@ const DataEntry = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const { user } = useAuth();
-  const { getProduction, totalProduction } = useProduction();
+  const { getProduction, totalProduction, error, setError } = useProduction();
+
+  const resetForm = () => {
+    setTp("");
+    setCp("");
+    setRc("");
+    setTpTarget("");
+    setCpTarget("");
+    setRcTarget("");
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const now = new Date();
-    const timestamp = Timestamp.fromDate(now);
     const data = {
       rc,
       rcTarget,
@@ -48,21 +55,13 @@ const DataEntry = () => {
       cp,
       cpTarget,
       userId: user?.uid,
-      createdAt: timestamp,
     };
     try {
-      await addDoc(productionCollectionRef, data);
-    } catch (e) {
-      console.log(e.message);
+      await Production.addProduction(data);
+    } catch (error) {
+      setError(error);
     }
-
-    setTp("");
-    setCp("");
-    setRc("");
-    setTpTarget("");
-    setCpTarget("");
-    setRcTarget("");
-
+    resetForm();
     setShowAlert(true);
     setTimeout(() => {
       setShowAlert(false);
@@ -73,6 +72,7 @@ const DataEntry = () => {
   return (
     <main className="relative flex flex-col">
       {showAlert && <SuccessAlert />}
+      {error && <ErrorAlert error={error} />}
       <Dialog>
         <DialogTrigger>
           <Button>Add Production Data</Button>

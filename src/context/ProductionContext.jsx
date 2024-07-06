@@ -1,10 +1,7 @@
 "use client";
-import {
-  productionCollectionRef,
-  manpowerCollectionRef,
-  monthlyTargetCollectionRef,
-} from "@/config/firebase";
-import { getDocs, limit, orderBy, query } from "firebase/firestore";
+import Manpower from "@/models/ManpowerModel";
+import Production from "@/models/ProductionModel";
+import MonthlyTarget from "@/models/MonthlyTargetModel";
 import { createContext, useContext, useEffect, useState } from "react";
 
 const ProductionContext = createContext();
@@ -12,6 +9,7 @@ const ProductionContext = createContext();
 export const ProductionProvider = ({ children }) => {
   const [production, setProduction] = useState([]);
   const [totalProduction, setTotalProduction] = useState(null);
+
   const [manpower, setManpower] = useState([]);
   const [totalManpower, setTotalManpower] = useState(null);
 
@@ -23,13 +21,19 @@ export const ProductionProvider = ({ children }) => {
 
   const getProduction = async () => {
     try {
-      const data = await getDocs(productionCollectionRef);
-      const productionData = data.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setTotalProduction(productionData);
-      console.log(productionData);
+      const data = await Production.getProductions();
+      setTotalProduction(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchLatestProductionData = async () => {
+    try {
+      const data = await Production.fetchLatestProductionData();
+      setProduction(data);
     } catch (error) {
       setError(error);
     } finally {
@@ -39,29 +43,8 @@ export const ProductionProvider = ({ children }) => {
 
   const getManpower = async () => {
     try {
-      const data = await getDocs(manpowerCollectionRef);
-      const manpowerData = data.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setTotalManpower(manpowerData);
-      console.log(manpowerData);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getMonthlyTarget = async () => {
-    try {
-      const data = await getDocs(monthlyTargetCollectionRef);
-      const monthlyTargetData = data.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setTotalMonthlyTarget(monthlyTargetData);
-      console.log(monthlyTargetData);
+      const data = await Manpower.getManpowers();
+      setTotalManpower(data);
     } catch (error) {
       setError(error);
     } finally {
@@ -71,55 +54,21 @@ export const ProductionProvider = ({ children }) => {
 
   const fetchLatestManpowerData = async () => {
     try {
-      const q = query(
-        manpowerCollectionRef,
-        orderBy("createdAt", "desc"),
-        limit(1)
-      );
-
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const latestData = querySnapshot.docs[0].data();
-        setManpower([latestData]);
-        console.log("Latest manpower data:", latestData);
-        // return latestData;
-      } else {
-        console.log("No documents found in manpower collection.");
-        setManpower([]);
-        return null;
-      }
+      const data = await Manpower.fetchLatestManpowerData();
+      setManpower(data);
     } catch (error) {
-      console.error("Error fetching latest manpower data:", error);
-      throw error;
+      setError(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchLatestProductionData = async () => {
+  const getMonthlyTarget = async () => {
     try {
-      const q = query(
-        productionCollectionRef,
-        orderBy("createdAt", "desc"),
-        limit(1)
-      );
-
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const latestData = querySnapshot.docs[0].data();
-        setProduction([latestData]);
-        console.log("Latest production data:", latestData);
-        // return latestData;
-      } else {
-        console.log("No documents found in production collection.");
-        setProduction([]);
-        return null;
-      }
+      const data = await MonthlyTarget.getMonthlyTargets();
+      setTotalMonthlyTarget(data);
     } catch (error) {
-      console.error("Error fetching latest production data:", error);
-      throw error;
+      setError(error);
     } finally {
       setLoading(false);
     }
@@ -127,27 +76,10 @@ export const ProductionProvider = ({ children }) => {
 
   const fetchLatestMonthlyTargetData = async () => {
     try {
-      const q = query(
-        monthlyTargetCollectionRef,
-        orderBy("createdAt", "desc"),
-        limit(1)
-      );
-
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const latestData = querySnapshot.docs[0].data();
-        setMonthlyTarget([latestData]);
-        console.log("Latest monthly target data:", latestData);
-        // return latestData;
-      } else {
-        console.log("No documents found in monthly target collection.");
-        setMonthlyTarget([]);
-        return null;
-      }
+      const data = await MonthlyTarget.fetchLatestMonthlyTargetData();
+      setMonthlyTarget(data);
     } catch (error) {
-      console.error("Error fetching latest monthly target data:", error);
-      throw error;
+      setError(error);
     } finally {
       setLoading(false);
     }
@@ -174,6 +106,7 @@ export const ProductionProvider = ({ children }) => {
     totalProduction,
     loading,
     error,
+    setError,
     getProduction,
     getManpower,
     getMonthlyTarget,

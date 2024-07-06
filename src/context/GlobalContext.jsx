@@ -3,6 +3,7 @@ import Manpower from "@/models/ManpowerModel";
 import Production from "@/models/ProductionModel";
 import MonthlyTarget from "@/models/MonthlyTargetModel";
 import { createContext, useContext, useEffect, useState } from "react";
+import Loading from "@/components/Loading";
 
 const GlobalContext = createContext();
 
@@ -104,7 +105,6 @@ export const GlobalProvider = ({ children }) => {
     monthlyTarget,
     totalMonthlyTarget,
     totalProduction,
-    loading,
     error,
     setError,
     getProduction,
@@ -114,7 +114,7 @@ export const GlobalProvider = ({ children }) => {
 
   return (
     <GlobalContext.Provider value={value}>
-      {!loading && children}
+      {loading ? <Loading /> : children}
     </GlobalContext.Provider>
   );
 };

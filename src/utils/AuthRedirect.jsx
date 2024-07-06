@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import Loading from "@/components/Loading";
 
 const AuthRedirect = ({ children }) => {
   const { user } = useAuth();
@@ -11,10 +12,12 @@ const AuthRedirect = ({ children }) => {
     if (user) {
       router.replace("/user/dashboard");
     }
- }, [user, router]);
+  }, [user, router]);
 
   if (user) {
-    return null; // or a loading spinner
+    return (
+        <Loading />
+    );
   }
 
   return children;

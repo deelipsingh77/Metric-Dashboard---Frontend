@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Smileys from "@/components/Smileys";
-import { monthlyProductionData, machinePackingData } from "@/utils/data";
+import { monthlyProductionData } from "@/utils/data";
 import DownTimeChart from "@/components/DownTimeChart";
 import BarGraph from "@/components/BarGraph";
 import MachineBarGraph from "@/components/MachineBarGraph";
@@ -16,7 +16,6 @@ import { DataTable } from "@/components/DataTable";
 import { useGlobal } from "@/context/GlobalContext";
 import { useEffect, useState } from "react";
 import { isSameMonth, set } from "date-fns";
-import Loading from "@/components/Loading";
 
 export const columns = [
   {
@@ -48,7 +47,6 @@ const Dashboard = () => {
   const [tpMonthlyTarget, setTpMonthlyTarget] = useState(null);
   const [cpMonthlyTarget, setCpMonthlyTarget] = useState(null);
 
-  const [machineData, setMachineData] = useState({});
 
   const getMonthlyTarget = () => {
     if (!monthlyTarget[0]) return;
@@ -75,38 +73,25 @@ const Dashboard = () => {
     setRcMonthlyTarget((rcSum / monthlyTarget[0]?.rcTarget) * 100);
     setTpMonthlyTarget((tpSum / monthlyTarget[0]?.tpTarget) * 100);
     setCpMonthlyTarget((cpSum / monthlyTarget[0]?.cpTarget) * 100);
-    // console.log(
-    //   rcSum,
-    //   tpSum,
-    //   cpSum,
-    //   rcMonthlyTarget,
-    //   tpMonthlyTarget,
-    //   cpMonthlyTarget
-    // );
   };
 
   const transformMachineData = (machineId) => {
-    // Find daily machine data for the specified machineId
     const dailyMachineData = dailyMachineProduction.find(
       (item) => item.machine === machineId
     );
 
-    // console.log("test", machineId, dailyMachineData, dailyMachineProduction);
-
-    // Find monthly machine data for the specified machineId
     const monthlyMachineData = monthlyMachineProduction[machineId];
 
     if (!dailyMachineData || !monthlyMachineData) {
       console.log(`Data not found for machine ${machineId}`);
-      return null; // Handle case where data is not found
+      return null;
     }
 
-    // Extract relevant fields from daily and monthly data
-    const { dailyProduction, dailyTarget, packingManpower } = dailyMachineData;
-    const { totalProduction, totalTarget } = monthlyMachineData;
+    const { dailyProduction, dailyTarget } = dailyMachineData;
+    const { totalProduction, totalTarget, month } = monthlyMachineData;
 
     return [{
-      month: "June",
+      month: month,
       dailyProduction,
       dailyTarget,
       monthlyProduction: totalProduction,
@@ -114,29 +99,29 @@ const Dashboard = () => {
     }];
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (totalMachines && dailyMachineProduction && monthlyMachineProduction) {
-        try {
-          const newData = {};
-          await Promise.all(
-            totalMachines.map(async (machine) => {
-              const transformedData = transformMachineData(machine.id);
-              if (transformedData) {
-                newData[machine.id] = transformedData;
-              }
-            })
-          );
-          console.log("newData", newData);
-          setMachineData(newData);
-        } catch (error) {
-          console.error("Error fetching or transforming machine data:", error);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (totalMachines && dailyMachineProduction && monthlyMachineProduction) {
+  //       try {
+  //         const newData = {};
+  //         await Promise.all(
+  //           totalMachines.map(async (machine) => {
+  //             const transformedData = transformMachineData(machine.id);
+  //             if (transformedData) {
+  //               newData[machine.id] = transformedData;
+  //             }
+  //           })
+  //         );
+  //         console.log("newData", newData);
+  //         setMachineData(newData);
+  //       } catch (error) {
+  //         console.error("Error fetching or transforming machine data:", error);
+  //       }
+  //     }
+  //   };
 
-    fetchData();
-  }, [dailyMachineProduction, monthlyMachineProduction, totalMachines]);
+  //   fetchData();
+  // }, [dailyMachineProduction, monthlyMachineProduction, totalMachines]);
 
   useEffect(() => {
     getMonthlyTarget();
@@ -352,8 +337,7 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-6 justify-evenly col-span-12 gap-4">
-          {machineData
-            ? totalMachines?.map((machine) => (
+          {totalMachines?.map((machine) => (
                 <Card
                   key={machine.id}
                   className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900"
@@ -363,12 +347,11 @@ const Dashboard = () => {
                   </CardHeader>
                   <CardContent className="p-0">
                     <MachineBarGraph
-                      monthlyProductionData={machineData[machine.id]}
+                      monthlyProductionData={transformMachineData(machine.id)}
                     />
                   </CardContent>
                 </Card>
-              ))
-            : null}
+              ))}
         </div>
 
         <div

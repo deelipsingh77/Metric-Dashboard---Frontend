@@ -10,7 +10,7 @@ import {
   where,
 } from "firebase/firestore";
 import { z } from "zod";
-import { startOfMonth, endOfMonth } from "date-fns";
+import { startOfMonth, endOfMonth, format } from "date-fns";
 
 const dailyMachineProductionSchema = z.object({
   machine: z.string(),
@@ -79,7 +79,7 @@ export default class DailyMachineProduction {
           const data = querySnapshot.docs[0].data();
           return { ...data, id: querySnapshot.docs[0].id };
         } else {
-          console.log(`No data found for machine ${machineId}`); // Debugging line
+          console.log(`No data found for machine ${machineId}`);
         }
         return null;
       });
@@ -100,7 +100,8 @@ export default class DailyMachineProduction {
       const currentMonthEnd = endOfMonth(new Date());
 
       const querySnapshot = await getDocs(
-        query(this.dailyMachineProductionCollection,
+        query(
+          this.dailyMachineProductionCollection,
           where("createdAt", ">=", currentMonthStart),
           where("createdAt", "<=", currentMonthEnd)
         )
@@ -111,12 +112,17 @@ export default class DailyMachineProduction {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const { machine, dailyProduction, dailyTarget, packingManpower } = data;
+        const monthName = format(
+          new Date(data.createdAt.seconds * 1000),
+          "MMMM"
+        );
 
         if (!monthlyProductionData[machine]) {
           monthlyProductionData[machine] = {
             totalProduction: 0,
             totalTarget: 0,
             totalPackingManpower: 0,
+            month: monthName,
           };
         }
 

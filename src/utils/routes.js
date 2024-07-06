@@ -20,6 +20,14 @@ const routes = [
         name: "Manpower",
       },
       {
+        route: "/user/data-entry/machines",
+        name: "Machines",
+      },
+      {
+        route: "/user/data-entry/machine-production",
+        name: "Machine Production",
+      },
+      {
         route: "/user/data-entry/monthly-target",
         name: "Monthly Target",
       },

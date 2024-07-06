@@ -4,6 +4,8 @@ import Production from "@/models/ProductionModel";
 import MonthlyTarget from "@/models/MonthlyTargetModel";
 import { createContext, useContext, useEffect, useState } from "react";
 import Loading from "@/components/Loading";
+import Machine from "@/models/MachineModel";
+import DailyMachineProduction from "@/models/DailyMachineProductionModel";
 
 const GlobalContext = createContext();
 
@@ -16,6 +18,12 @@ export const GlobalProvider = ({ children }) => {
 
   const [monthlyTarget, setMonthlyTarget] = useState([]);
   const [totalMonthlyTarget, setTotalMonthlyTarget] = useState(null);
+
+  const [totalMachines, setTotalMachines] = useState(null);
+
+  const [dailyMachineProduction, setDailyMachineProduction] = useState([]);
+  const [totalDailyMachineProduction, setTotalDailyMachineProduction] = useState(null);
+  const [monthlyMachineProduction, setMonthlyMachineProduction] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -86,17 +94,65 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
+  const getMachine = async () => {
+    try {
+      const data = await Machine.getMachines();
+      setTotalMachines(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getDailyMachineProduction = async () => {
+    try {
+      const data = await DailyMachineProduction.getDailyMachineProductions();
+      setTotalDailyMachineProduction(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const fetchLatestDailyMachineProductionData = async () => {
+    try {
+      const data = await DailyMachineProduction.fetchLatestMachineProduction();
+      setDailyMachineProduction(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const fetchMonthlyMachineProduction = async () => {
+    try {
+      const data = await DailyMachineProduction.fetchMonthlyMachineProduction();
+      setMonthlyMachineProduction(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  } 
+
   useEffect(() => {
     getProduction();
     getManpower();
     getMonthlyTarget();
+    getMachine();
+    getDailyMachineProduction();
   }, []);
 
   useEffect(() => {
     fetchLatestProductionData();
     fetchLatestManpowerData();
     fetchLatestMonthlyTargetData();
-  }, [totalProduction, totalManpower, totalMonthlyTarget]);
+    fetchLatestDailyMachineProductionData();
+    fetchMonthlyMachineProduction();
+  }, [totalProduction, totalManpower, totalMonthlyTarget, totalMachines, totalDailyMachineProduction]);
 
   const value = {
     production,
@@ -105,11 +161,17 @@ export const GlobalProvider = ({ children }) => {
     monthlyTarget,
     totalMonthlyTarget,
     totalProduction,
+    totalMachines,
+    dailyMachineProduction,
+    totalDailyMachineProduction,
+    monthlyMachineProduction,
     error,
     setError,
     getProduction,
     getManpower,
     getMonthlyTarget,
+    getMachine,
+    getDailyMachineProduction,
   };
 
   return (

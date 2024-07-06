@@ -15,7 +15,8 @@ import NeedlePieChart from "@/components/NeedlePieChart";
 import { DataTable } from "@/components/DataTable";
 import { useGlobal } from "@/context/GlobalContext";
 import { useEffect, useState } from "react";
-import { isSameMonth } from "date-fns";
+import { isSameMonth, set } from "date-fns";
+import Loading from "@/components/Loading";
 
 export const columns = [
   {
@@ -33,13 +34,22 @@ export const columns = [
 ];
 
 const Dashboard = () => {
-  const { production, manpower, totalProduction, monthlyTarget } =
-    useGlobal();
+  const {
+    production,
+    totalProduction,
+    manpower,
+    dailyMachineProduction,
+    monthlyTarget,
+    monthlyMachineProduction,
+    totalMachines,
+  } = useGlobal();
 
   const [rcMonthlyTarget, setRcMonthlyTarget] = useState(null);
   const [tpMonthlyTarget, setTpMonthlyTarget] = useState(null);
   const [cpMonthlyTarget, setCpMonthlyTarget] = useState(null);
-  
+
+  const [machineData, setMachineData] = useState({});
+
   const getMonthlyTarget = () => {
     if (!monthlyTarget[0]) return;
     const currentMonth = new Date(monthlyTarget[0].createdAt.toDate());
@@ -65,15 +75,68 @@ const Dashboard = () => {
     setRcMonthlyTarget((rcSum / monthlyTarget[0]?.rcTarget) * 100);
     setTpMonthlyTarget((tpSum / monthlyTarget[0]?.tpTarget) * 100);
     setCpMonthlyTarget((cpSum / monthlyTarget[0]?.cpTarget) * 100);
-    console.log(
-      rcSum,
-      tpSum,
-      cpSum,
-      rcMonthlyTarget,
-      tpMonthlyTarget,
-      cpMonthlyTarget
-    );
+    // console.log(
+    //   rcSum,
+    //   tpSum,
+    //   cpSum,
+    //   rcMonthlyTarget,
+    //   tpMonthlyTarget,
+    //   cpMonthlyTarget
+    // );
   };
+
+  const transformMachineData = (machineId) => {
+    // Find daily machine data for the specified machineId
+    const dailyMachineData = dailyMachineProduction.find(
+      (item) => item.machine === machineId
+    );
+
+    // console.log("test", machineId, dailyMachineData, dailyMachineProduction);
+
+    // Find monthly machine data for the specified machineId
+    const monthlyMachineData = monthlyMachineProduction[machineId];
+
+    if (!dailyMachineData || !monthlyMachineData) {
+      console.log(`Data not found for machine ${machineId}`);
+      return null; // Handle case where data is not found
+    }
+
+    // Extract relevant fields from daily and monthly data
+    const { dailyProduction, dailyTarget, packingManpower } = dailyMachineData;
+    const { totalProduction, totalTarget } = monthlyMachineData;
+
+    return [{
+      month: "June",
+      dailyProduction,
+      dailyTarget,
+      monthlyProduction: totalProduction,
+      monthlyTarget: totalTarget,
+    }];
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (totalMachines && dailyMachineProduction && monthlyMachineProduction) {
+        try {
+          const newData = {};
+          await Promise.all(
+            totalMachines.map(async (machine) => {
+              const transformedData = transformMachineData(machine.id);
+              if (transformedData) {
+                newData[machine.id] = transformedData;
+              }
+            })
+          );
+          console.log("newData", newData);
+          setMachineData(newData);
+        } catch (error) {
+          console.error("Error fetching or transforming machine data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [dailyMachineProduction, monthlyMachineProduction, totalMachines]);
 
   useEffect(() => {
     getMonthlyTarget();
@@ -288,46 +351,24 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        <div
-          id="last-row"
-          className="grid grid-cols-2 sm:grid-cols-6 justify-evenly col-span-12 gap-4"
-        >
-          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
-            <CardHeader className="font-semibold p-2 text-lg">M1</CardHeader>
-            <CardContent className="p-0">
-              <MachineBarGraph monthlyProductionData={machinePackingData} />
-            </CardContent>
-          </Card>
-          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
-            <CardHeader className="font-semibold p-2 text-lg">M2</CardHeader>
-            <CardContent className="p-0">
-              <MachineBarGraph monthlyProductionData={machinePackingData} />
-            </CardContent>
-          </Card>
-          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
-            <CardHeader className="font-semibold p-2 text-lg">M3</CardHeader>
-            <CardContent className="p-0">
-              <MachineBarGraph monthlyProductionData={machinePackingData} />
-            </CardContent>
-          </Card>
-          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
-            <CardHeader className="font-semibold p-2 text-lg">M4</CardHeader>
-            <CardContent className="p-0">
-              <MachineBarGraph monthlyProductionData={machinePackingData} />
-            </CardContent>
-          </Card>
-          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
-            <CardHeader className="font-semibold p-2 text-lg">M5</CardHeader>
-            <CardContent className="p-0">
-              <MachineBarGraph monthlyProductionData={machinePackingData} />
-            </CardContent>
-          </Card>
-          <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
-            <CardHeader className="font-semibold p-2 text-lg">M6</CardHeader>
-            <CardContent className="p-0">
-              <MachineBarGraph monthlyProductionData={machinePackingData} />
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 sm:grid-cols-6 justify-evenly col-span-12 gap-4">
+          {machineData
+            ? totalMachines?.map((machine) => (
+                <Card
+                  key={machine.id}
+                  className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900"
+                >
+                  <CardHeader className="font-semibold p-2 text-lg">
+                    {machine.name}
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <MachineBarGraph
+                      monthlyProductionData={machineData[machine.id]}
+                    />
+                  </CardContent>
+                </Card>
+              ))
+            : null}
         </div>
 
         <div

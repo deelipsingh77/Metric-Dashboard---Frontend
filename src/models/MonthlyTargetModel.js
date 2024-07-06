@@ -8,14 +8,28 @@ import {
   query,
   Timestamp,
 } from "firebase/firestore";
+import { z } from "zod";
+
+const monthlyTargetSchema = z.object({
+  rcTarget: z.number().nonnegative(),
+  tpTarget: z.number().nonnegative(),
+  cpTarget: z.number().nonnegative(),
+  createdAt: z.instanceof(Date),
+});
 
 export default class MonthlyTarget {
   static monthlyTargetCollection = collection(db, "monthlyTarget");
 
   static async addMonthlyTarget(data) {
     try {
-      data.createdAt = Timestamp.fromDate(new Date());
-      return await addDoc(this.monthlyTargetCollection, data);
+      const validatedData = monthlyTargetSchema.parse({
+        rcTarget: Number(data.rcTarget),
+        tpTarget: Number(data.tpTarget),
+        cpTarget: Number(data.cpTarget),
+        createdAt: new Date(),
+      });
+      validatedData.createdAt = Timestamp.fromDate(new Date());
+      return await addDoc(this.monthlyTargetCollection, validatedData);
     } catch (error) {
       console.log(error.message);
       throw error;

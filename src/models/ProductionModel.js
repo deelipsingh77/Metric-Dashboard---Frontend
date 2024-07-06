@@ -8,14 +8,35 @@ import {
   query,
   Timestamp,
 } from "firebase/firestore";
+import { z } from "zod";
+
+const productionSchema = z.object({
+  rc: z.number().nonnegative(),
+  rcTarget: z.number().nonnegative(),
+  tp: z.number().nonnegative(),
+  tpTarget: z.number().nonnegative(),
+  cp: z.number().nonnegative(),
+  cpTarget: z.number().nonnegative(),
+  createdAt: z.instanceof(Date),
+});
 
 export default class Production {
   static productionCollection = collection(db, "production");
 
   static async addProduction(data) {
     try {
-      data.createdAt = Timestamp.fromDate(new Date());
-      return await addDoc(this.productionCollection, data);
+      const validatedData = productionSchema.parse({
+        ...data,
+        rc: Number(data.rc),
+        rcTarget: Number(data.rcTarget),
+        tp: Number(data.tp),
+        tpTarget: Number(data.tpTarget),
+        cp: Number(data.cp),
+        cpTarget: Number(data.cpTarget),
+        createdAt: new Date(),
+      });
+      validatedData.createdAt = Timestamp.fromDate(new Date());
+      return await addDoc(this.productionCollection, validatedData);
     } catch (error) {
       console.log(error.message);
       throw error;
@@ -31,7 +52,7 @@ export default class Production {
       }));
       return productionData;
     } catch (error) {
-      console.error("Error fetching production data:", error);
+      console.error("Error fetching production data:", error.message);
       throw error;
     }
   }
@@ -54,7 +75,7 @@ export default class Production {
         return [];
       }
     } catch (error) {
-      console.error("Error fetching latest production data:", error);
+      console.error("Error fetching latest production data:", error.message);
       throw error;
     }
   }

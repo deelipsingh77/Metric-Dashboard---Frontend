@@ -8,14 +8,28 @@ import {
   query,
   Timestamp,
 } from "firebase/firestore";
+import { z } from "zod";
+
+const manpowerSchema = z.object({
+  rc: z.number().nonnegative(),
+  tp: z.number().nonnegative(),
+  cp: z.number().nonnegative(),
+  createdAt: z.instanceof(Date),
+});
 
 export default class Manpower {
   static manpowerCollection = collection(db, "manpower");
 
   static async addManpower(data) {
     try {
-      data.createdAt = Timestamp.fromDate(new Date());
-      return await addDoc(this.manpowerCollection, data);
+      const validatedData = manpowerSchema.parse({
+        rc: Number(data.rc),
+        tp: Number(data.tp),
+        cp: Number(data.cp),
+        createdAt: new Date(),
+      });
+      validatedData.createdAt = Timestamp.fromDate(new Date());
+      return await addDoc(this.manpowerCollection, validatedData);
     } catch (error) {
       console.log(error.message);
       throw error;

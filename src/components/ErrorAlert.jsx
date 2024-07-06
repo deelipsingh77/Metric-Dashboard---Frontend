@@ -1,6 +1,7 @@
 import { RocketIcon } from "@radix-ui/react-icons";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { z } from "zod";
 
 function getErrorMessage(errorCode) {
   console.log(errorCode);
@@ -18,10 +19,13 @@ function getErrorMessage(errorCode) {
     "auth/weak-password": "The password is too weak.",
     "auth/credential-already-in-use":
       "This credential is already associated with a different user account.",
-    "auth/invalid-credential":
-      "The provided credential is invalid or expired.",
+    "auth/invalid-credential": "The provided credential is invalid or expired.",
     // Add more error codes and messages as needed
   };
+
+  if (errorCode instanceof z.ZodError) {
+    return errorCode.errors[errorCode.errors.length - 1].message;
+  }
 
   return errorMessages[errorCode] || "An unknown error occurred.";
 }

@@ -65,7 +65,7 @@ const MonthlyTargetPage = () => {
 
   return (
     <main className="relative flex flex-col h-screen">
-      {showAlert && <SuccessAlert />}
+      {(showAlert && !error) && <SuccessAlert />}
       {error && <ErrorAlert error={error} />}
       <Dialog>
         <DialogTrigger>

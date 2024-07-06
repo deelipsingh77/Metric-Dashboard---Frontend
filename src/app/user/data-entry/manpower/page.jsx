@@ -65,7 +65,7 @@ const ManPower = () => {
 
   return (
     <main className="relative flex flex-col h-screen">
-      {showAlert && <SuccessAlert />}
+      {(showAlert && !error) && <SuccessAlert />}
       {error && <ErrorAlert error={error} />}
       <Dialog>
         <DialogTrigger>
@@ -83,7 +83,7 @@ const ManPower = () => {
               <Input
                 id="rc"
                 placeholder="RC"
-                type="text"
+                type="number"
                 value={rc}
                 onChange={(e) => setRc(e.target.value)}
                 autoCapitalize="none"

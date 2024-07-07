@@ -74,8 +74,14 @@ const DataEntry = () => {
       const sheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
+      const filteredRecords = jsonData.filter((row) => {
+        return Object.values(row).some(
+          (cell) => cell !== null && cell !== undefined && cell !== ""
+        );
+      });
+
       // Separate header and records
-      const [header, ...records] = jsonData;
+      const [header, ...records] = filteredRecords;
 
       // Expected header fields
       const expectedHeader = [

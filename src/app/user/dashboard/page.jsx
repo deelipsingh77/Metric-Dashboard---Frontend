@@ -15,7 +15,7 @@ import NeedlePieChart from "@/components/NeedlePieChart";
 import { DataTable } from "@/components/DataTable";
 import { useGlobal } from "@/context/GlobalContext";
 import { useEffect, useState } from "react";
-import { isSameMonth, set } from "date-fns";
+import { isSameMonth } from "date-fns";
 
 export const columns = [
   {
@@ -35,45 +35,17 @@ export const columns = [
 const Dashboard = () => {
   const {
     production,
-    totalProduction,
+    yearlyProduction,
+    yearlyRcProduction,
+    yearlyTpProduction,
+    yearlyCpProduction,
+
     manpower,
     dailyMachineProduction,
     monthlyTarget,
     monthlyMachineProduction,
     totalMachines,
   } = useGlobal();
-
-  const [rcMonthlyTarget, setRcMonthlyTarget] = useState(null);
-  const [tpMonthlyTarget, setTpMonthlyTarget] = useState(null);
-  const [cpMonthlyTarget, setCpMonthlyTarget] = useState(null);
-
-
-  const getMonthlyTarget = () => {
-    if (!monthlyTarget[0]) return;
-    const currentMonth = new Date(monthlyTarget[0].createdAt.toDate());
-    const filteredTotalProduction = totalProduction?.filter((item) =>
-      isSameMonth(new Date(item.createdAt.toDate()), currentMonth)
-    );
-
-    console.log("FilteredProduction", filteredTotalProduction);
-
-    const rcSum = filteredTotalProduction.reduce(
-      (acc, curr) => acc + parseInt(curr.rc),
-      0
-    );
-    const tpSum = filteredTotalProduction.reduce(
-      (acc, curr) => acc + parseInt(curr.tp),
-      0
-    );
-    const cpSum = filteredTotalProduction.reduce(
-      (acc, curr) => acc + parseInt(curr.cp),
-      0
-    );
-
-    setRcMonthlyTarget((rcSum / monthlyTarget[0]?.rcTarget) * 100);
-    setTpMonthlyTarget((tpSum / monthlyTarget[0]?.tpTarget) * 100);
-    setCpMonthlyTarget((cpSum / monthlyTarget[0]?.cpTarget) * 100);
-  };
 
   const transformMachineData = (machineId) => {
     const dailyMachineData = dailyMachineProduction.find(
@@ -90,42 +62,16 @@ const Dashboard = () => {
     const { dailyProduction, dailyTarget } = dailyMachineData;
     const { totalProduction, totalTarget, month } = monthlyMachineData;
 
-    return [{
-      month: month,
-      dailyProduction,
-      dailyTarget,
-      monthlyProduction: totalProduction,
-      monthlyTarget: totalTarget,
-    }];
+    return [
+      {
+        month: month,
+        dailyProduction,
+        dailyTarget,
+        monthlyProduction: totalProduction,
+        monthlyTarget: totalTarget,
+      },
+    ];
   };
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (totalMachines && dailyMachineProduction && monthlyMachineProduction) {
-  //       try {
-  //         const newData = {};
-  //         await Promise.all(
-  //           totalMachines.map(async (machine) => {
-  //             const transformedData = transformMachineData(machine.id);
-  //             if (transformedData) {
-  //               newData[machine.id] = transformedData;
-  //             }
-  //           })
-  //         );
-  //         console.log("newData", newData);
-  //         setMachineData(newData);
-  //       } catch (error) {
-  //         console.error("Error fetching or transforming machine data:", error);
-  //       }
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [dailyMachineProduction, monthlyMachineProduction, totalMachines]);
-
-  useEffect(() => {
-    getMonthlyTarget();
-  }, [monthlyTarget, totalProduction]);
 
   const productionData = {
     rc: parseInt(production[0]?.rc) || 0,
@@ -144,6 +90,16 @@ const Dashboard = () => {
     tpTarget: parseInt(manpower[0]?.tpTarget) || 0,
     cpTarget: parseInt(manpower[0]?.cpTarget) || 0,
   };
+
+  const machineIdToName = totalMachines.reduce((acc, machine) => {
+    acc[machine.id] = machine.name;
+    return acc;
+  }, {});
+
+  const packingManpowerData = dailyMachineProduction.map((machine) => ({
+    name: machineIdToName[machine.machine],
+    manpower: machine.packingManpower,
+  }));
 
   return (
     <main>
@@ -174,44 +130,26 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <CardDescription className="w-full">
-              <DataTable
-                columns={[
-                  {
-                    accessorKey: "m1",
-                    header: "M1",
-                  },
-                  {
-                    accessorKey: "m2",
-                    header: "M2",
-                  },
-                  {
-                    accessorKey: "m3",
-                    header: "M3",
-                  },
-                  {
-                    accessorKey: "m4",
-                    header: "M4",
-                  },
-                  {
-                    accessorKey: "m5",
-                    header: "M5",
-                  },
-                  {
-                    accessorKey: "m6",
-                    header: "M6",
-                  },
-                ]}
-                data={[
-                  {
-                    m1: 45,
-                    m2: 50,
-                    m3: 60,
-                    m4: 70,
-                    m5: 80,
-                    m6: 90,
-                  },
-                ]}
-              />
+              <table className="w-full border-white">
+                <thead>
+                  <tr>
+                    {totalMachines.map((machine) => (
+                      <th key={machine.id}>{machine.name}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    {totalMachines.map((machine) => (
+                      <td key={machine.id} className="text-center">
+                        {packingManpowerData.find(
+                          (data) => data.name === machine.name
+                        )?.manpower || "-"}
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
             </CardDescription>
           </CardContent>
         </Card>
@@ -221,10 +159,6 @@ const Dashboard = () => {
             <CardTitle>Daily Production Manpower</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* <CardDescription>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac
-              erat nec felis ultricies rutrum.
-            </CardDescription> */}
             <DataTable
               columns={columns}
               data={[
@@ -244,28 +178,49 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent className="flex sm:flex-col items-center justify-around h-full">
             <div className="flex flex-col sm:flex-row items-center gap-2 mt-2 w-full">
-              <Smileys value={rcMonthlyTarget} />
+              <Smileys
+                value={
+                  (monthlyTarget.totalRc / monthlyTarget.totalRcTarget) * 100
+                }
+              />
               <div className="grow">
                 <h1 className="text-3xl font-bold text-center">
-                  {parseInt(rcMonthlyTarget)}%
+                  {parseInt(
+                    (monthlyTarget.totalRc / monthlyTarget.totalRcTarget) * 100
+                  )}
+                  %
                 </h1>
                 <h2 className="text-center">RC</h2>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2 mt-2 w-full">
-              <Smileys value={tpMonthlyTarget} />
+              <Smileys
+                value={
+                  (monthlyTarget.totalTp / monthlyTarget.totalTpTarget) * 100
+                }
+              />
               <div className="grow">
                 <h1 className="text-3xl font-bold text-center">
-                  {parseInt(tpMonthlyTarget)}%
+                  {parseInt(
+                    (monthlyTarget.totalTp / monthlyTarget.totalTpTarget) * 100
+                  )}
+                  %
                 </h1>
                 <h2 className="text-center">TP</h2>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2 mt-2 w-full">
-              <Smileys value={cpMonthlyTarget} />
+              <Smileys
+                value={
+                  (monthlyTarget.totalCp / monthlyTarget.totalCpTarget) * 100
+                }
+              />
               <div className="grow">
                 <h1 className="text-3xl font-bold text-center">
-                  {parseInt(cpMonthlyTarget)}%
+                  {parseInt(
+                    (monthlyTarget.totalCp / monthlyTarget.totalCpTarget) * 100
+                  )}
+                  %
                 </h1>
                 <h2 className="text-center">CP</h2>
               </div>
@@ -338,20 +293,20 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-6 justify-evenly col-span-12 gap-4">
           {totalMachines?.map((machine) => (
-                <Card
-                  key={machine.id}
-                  className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900"
-                >
-                  <CardHeader className="font-semibold p-2 text-lg">
-                    {machine.name}
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <MachineBarGraph
-                      monthlyProductionData={transformMachineData(machine.id)}
-                    />
-                  </CardContent>
-                </Card>
-              ))}
+            <Card
+              key={machine.id}
+              className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900"
+            >
+              <CardHeader className="font-semibold p-2 text-lg">
+                {machine.name}
+              </CardHeader>
+              <CardContent className="p-0">
+                <MachineBarGraph
+                  monthlyProductionData={transformMachineData(machine.id)}
+                />
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         <div
@@ -361,25 +316,25 @@ const Dashboard = () => {
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">Total</CardHeader>
             <CardContent className="p-0">
-              <BarGraph monthlyProductionData={monthlyProductionData} />
+              <BarGraph monthlyProductionData={yearlyProduction} />
             </CardContent>
           </Card>
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">RC</CardHeader>
             <CardContent className="p-0">
-              <BarGraph monthlyProductionData={monthlyProductionData} />
+              <BarGraph monthlyProductionData={yearlyRcProduction} />
             </CardContent>
           </Card>
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">TP</CardHeader>
             <CardContent className="p-0">
-              <BarGraph monthlyProductionData={monthlyProductionData} />
+              <BarGraph monthlyProductionData={yearlyTpProduction} />
             </CardContent>
           </Card>
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">CP</CardHeader>
             <CardContent className="p-0">
-              <BarGraph monthlyProductionData={monthlyProductionData} />
+              <BarGraph monthlyProductionData={yearlyCpProduction} />
             </CardContent>
           </Card>
         </div>

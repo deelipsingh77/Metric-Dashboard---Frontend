@@ -1,7 +1,6 @@
 "use client";
 import Manpower from "@/models/ManpowerModel";
 import Production from "@/models/ProductionModel";
-import MonthlyTarget from "@/models/MonthlyTargetModel";
 import { createContext, useContext, useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import Machine from "@/models/MachineModel";
@@ -12,18 +11,23 @@ const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
   const [production, setProduction] = useState([]);
   const [totalProduction, setTotalProduction] = useState(null);
+  const [yearlyProduction, setYearlyProduction] = useState(null);
+  const [yearlyRcProduction, setYearlyRcProduction] = useState(null);
+  const [yearlyTpProduction, setYearlyTpProduction] = useState(null);
+  const [yearlyCpProduction, setYearlyCpProduction] = useState(null);
 
   const [manpower, setManpower] = useState([]);
   const [totalManpower, setTotalManpower] = useState(null);
 
   const [monthlyTarget, setMonthlyTarget] = useState([]);
-  const [totalMonthlyTarget, setTotalMonthlyTarget] = useState(null);
 
   const [totalMachines, setTotalMachines] = useState(null);
 
   const [dailyMachineProduction, setDailyMachineProduction] = useState([]);
-  const [totalDailyMachineProduction, setTotalDailyMachineProduction] = useState(null);
-  const [monthlyMachineProduction, setMonthlyMachineProduction] = useState(null);
+  const [totalDailyMachineProduction, setTotalDailyMachineProduction] =
+    useState(null);
+  const [monthlyMachineProduction, setMonthlyMachineProduction] =
+    useState(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,6 +49,51 @@ export const GlobalProvider = ({ children }) => {
       setProduction(data);
     } catch (error) {
       setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchYearlyProductionData = async () => {
+    try {
+      const data = await Production.fetchYearlyProductionData();
+      setYearlyProduction(data);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchYearlyRcProductionData = async () => {
+    try {
+      const data = await Production.fetchYearlyRcProductionData();
+      setYearlyRcProduction(data);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const fetchYearlyTpProductionData = async () => {
+    try {
+      const data = await Production.fetchYearlyTpProductionData();
+      setYearlyTpProduction(data);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchYearlyCpProductionData = async () => {
+    try {
+      const data = await Production.fetchYearlyCpProductionData();
+      setYearlyCpProduction(data);
+    } catch (e) {
+      setError(e);
     } finally {
       setLoading(false);
     }
@@ -72,20 +121,9 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-  const getMonthlyTarget = async () => {
-    try {
-      const data = await MonthlyTarget.getMonthlyTargets();
-      setTotalMonthlyTarget(data);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const fetchLatestMonthlyTargetData = async () => {
     try {
-      const data = await MonthlyTarget.fetchLatestMonthlyTargetData();
+      const data = await Production.fetchMonthlyProductionData();
       setMonthlyTarget(data);
     } catch (error) {
       setError(error);
@@ -98,6 +136,7 @@ export const GlobalProvider = ({ children }) => {
     try {
       const data = await Machine.getMachines();
       setTotalMachines(data);
+      console.log(data);
     } catch (error) {
       setError(error);
     } finally {
@@ -114,7 +153,7 @@ export const GlobalProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const fetchLatestDailyMachineProductionData = async () => {
     try {
@@ -125,7 +164,7 @@ export const GlobalProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const fetchMonthlyMachineProduction = async () => {
     try {
@@ -136,30 +175,43 @@ export const GlobalProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  } 
+  };
 
   useEffect(() => {
     getProduction();
     getManpower();
-    getMonthlyTarget();
     getMachine();
     getDailyMachineProduction();
   }, []);
 
   useEffect(() => {
     fetchLatestProductionData();
+    fetchYearlyProductionData();
+    fetchYearlyRcProductionData();
+    fetchYearlyTpProductionData();
+    fetchYearlyCpProductionData();
+
     fetchLatestManpowerData();
     fetchLatestMonthlyTargetData();
     fetchLatestDailyMachineProductionData();
     fetchMonthlyMachineProduction();
-  }, [totalProduction, totalManpower, totalMonthlyTarget, totalMachines, totalDailyMachineProduction]);
+  }, [
+    totalProduction,
+    totalManpower,
+    totalMachines,
+    totalDailyMachineProduction,
+  ]);
 
   const value = {
     production,
+    yearlyProduction,
+    yearlyRcProduction,
+    yearlyTpProduction,
+    yearlyCpProduction,
+
     manpower,
     totalManpower,
     monthlyTarget,
-    totalMonthlyTarget,
     totalProduction,
     totalMachines,
     dailyMachineProduction,
@@ -169,7 +221,6 @@ export const GlobalProvider = ({ children }) => {
     setError,
     getProduction,
     getManpower,
-    getMonthlyTarget,
     getMachine,
     getDailyMachineProduction,
   };

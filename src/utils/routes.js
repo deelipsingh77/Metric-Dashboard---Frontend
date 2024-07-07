@@ -28,10 +28,6 @@ const routes = [
         name: "Machine Production",
       },
       {
-        route: "/user/data-entry/monthly-target",
-        name: "Monthly Target",
-      },
-      {
         route: "/user/data-entry/down-time",
         name: "Down Time",
       },

@@ -3,6 +3,8 @@ import {
   addDoc,
   collection,
   getDocs,
+  orderBy,
+  query,
   Timestamp,
 } from "firebase/firestore";
 import { z } from "zod";
@@ -33,7 +35,8 @@ export default class Machine {
 
   static async getMachines() {
     try {
-      const querySnapshot = await getDocs(this.machineCollection);
+      const machinesQuery = query(this.machineCollection, orderBy("createdAt", "asc"));
+      const querySnapshot = await getDocs(machinesQuery);
       const machinesData = querySnapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,

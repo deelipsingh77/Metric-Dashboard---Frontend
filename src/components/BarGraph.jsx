@@ -14,6 +14,7 @@ const CustomTooltip = ({ active, payload, label }) => {
       <div className="custom-tooltip dark:bg-slate-700 dark:shadow-xl bg-white shadow-2xl p-4 rounded-2xl">
         <p className="label dark:text-white text-black">{`Month: ${label}`}</p>
         <p className="desc dark:text-white text-black">{`Production: ${payload[0].value}`}</p>
+        <p className="desc dark:text-white text-black">{`Last Year Production: ${payload[1].value}`}</p>
       </div>
     );
   }

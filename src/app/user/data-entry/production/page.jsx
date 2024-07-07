@@ -244,46 +244,48 @@ const DataEntry = () => {
             <DialogHeader>
               <DialogTitle>Choose Excel File</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleUpload}>
-              <input
-                type="file"
-                accept=".xlsx, .xls"
-                onChange={handleFileChange}
-              />
-              <Button type="submit">Submit</Button>
-            </form>
-            {fileUploaded.length > 0 && (
-              <Table className="w-full">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>RC</TableHead>
-                    <TableHead>RC Target</TableHead>
-                    <TableHead>TP</TableHead>
-                    <TableHead>TP Target</TableHead>
-                    <TableHead>CP</TableHead>
-                    <TableHead>CP Target</TableHead>
-                    <TableHead>Created At</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {fileUploaded.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{item.rc}</TableCell>
-                      <TableCell>{item.rcTarget}</TableCell>
-                      <TableCell>{item.tp}</TableCell>
-                      <TableCell>{item.tpTarget}</TableCell>
-                      <TableCell>{item.cp}</TableCell>
-                      <TableCell>{item.cpTarget}</TableCell>
-                      <TableCell>
-                        {item.createdAt instanceof Date
-                          ? item.createdAt.toLocaleDateString()
-                          : "Invalid Date"}
-                      </TableCell>
+            <div className="max-h-96 overflow-y-auto">
+              <form onSubmit={handleUpload}>
+                <input
+                  type="file"
+                  accept=".xlsx, .xls"
+                  onChange={handleFileChange}
+                />
+                <Button type="submit">Submit</Button>
+              </form>
+              {fileUploaded.length > 0 && (
+                <Table className="w-full">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>RC</TableHead>
+                      <TableHead>RC Target</TableHead>
+                      <TableHead>TP</TableHead>
+                      <TableHead>TP Target</TableHead>
+                      <TableHead>CP</TableHead>
+                      <TableHead>CP Target</TableHead>
+                      <TableHead>Created At</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
+                  </TableHeader>
+                  <TableBody>
+                    {fileUploaded.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{item.rc}</TableCell>
+                        <TableCell>{item.rcTarget}</TableCell>
+                        <TableCell>{item.tp}</TableCell>
+                        <TableCell>{item.tpTarget}</TableCell>
+                        <TableCell>{item.cp}</TableCell>
+                        <TableCell>{item.cpTarget}</TableCell>
+                        <TableCell>
+                          {item.createdAt instanceof Date
+                            ? item.createdAt.toLocaleDateString()
+                            : "Invalid Date"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </div>
           </DialogContent>
         </Dialog>
       </div>

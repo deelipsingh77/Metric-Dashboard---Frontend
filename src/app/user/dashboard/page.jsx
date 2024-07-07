@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Smileys from "@/components/Smileys";
-import { monthlyProductionData } from "@/utils/data";
+import { data, monthlyProductionData } from "@/utils/data";
 import DownTimeChart from "@/components/DownTimeChart";
 import BarGraph from "@/components/BarGraph";
 import MachineBarGraph from "@/components/MachineBarGraph";
@@ -39,6 +39,8 @@ const Dashboard = () => {
     yearlyRcProduction,
     yearlyTpProduction,
     yearlyCpProduction,
+
+    recentDowntime,
 
     manpower,
     dailyMachineProduction,
@@ -342,13 +344,13 @@ const Dashboard = () => {
           <CardHeader className="font-semibold p-2 text-lg">
             Production Down Time
           </CardHeader>
-          <DownTimeChart width={window.innerWidth < 640 ? 350 : 1250} />
+          <DownTimeChart data={recentDowntime} width={window.innerWidth < 640 ? 350 : 1250} />
         </Card>
         <Card className="shadow-md col-span-12 rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
           <CardHeader className="font-semibold p-2 text-lg">
             Packing Down Time
           </CardHeader>
-          <DownTimeChart width={window.innerWidth < 640 ? 350 : 1250} />
+          <DownTimeChart data={data} width={window.innerWidth < 640 ? 350 : 1250} />
         </Card>
       </section>
     </main>

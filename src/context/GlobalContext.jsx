@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import Loading from "@/components/Loading";
 import Machine from "@/models/MachineModel";
 import DailyMachineProduction from "@/models/DailyMachineProductionModel";
+import DowntimeData from "@/models/DowntimeModel";
 
 const GlobalContext = createContext();
 
@@ -28,6 +29,8 @@ export const GlobalProvider = ({ children }) => {
     useState(null);
   const [monthlyMachineProduction, setMonthlyMachineProduction] =
     useState(null);
+
+  const [recentDowntime, setRecentDowntime] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,7 +78,6 @@ export const GlobalProvider = ({ children }) => {
       setLoading(false);
     }
   };
-
 
   const fetchYearlyTpProductionData = async () => {
     try {
@@ -177,6 +179,32 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
+  const fetchRecentDowntime = async () => {
+    try {
+      const data = await DowntimeData.getDowntimeForMostRecentDay();
+
+      const transformData = (fetchedData) => {
+        const data = [];
+        for (let hour = 0; hour < 24; hour++) {
+          const hourData = fetchedData.find((item) => item.hour === hour);
+          const downMachines = hourData ? hourData.machinesDown : 0;
+          data.push({
+            time: `${hour.toString().padStart(2, "0")}:00`,
+            downMachines: downMachines,
+          });
+        }
+        return data;
+      };
+
+      const transformedData = transformData(data);
+      setRecentDowntime(transformedData);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     getProduction();
     getManpower();
@@ -195,6 +223,7 @@ export const GlobalProvider = ({ children }) => {
     fetchLatestMonthlyTargetData();
     fetchLatestDailyMachineProductionData();
     fetchMonthlyMachineProduction();
+    fetchRecentDowntime();
   }, [
     totalProduction,
     totalManpower,
@@ -208,6 +237,8 @@ export const GlobalProvider = ({ children }) => {
     yearlyRcProduction,
     yearlyTpProduction,
     yearlyCpProduction,
+
+    recentDowntime,
 
     manpower,
     totalManpower,
@@ -223,6 +254,7 @@ export const GlobalProvider = ({ children }) => {
     getManpower,
     getMachine,
     getDailyMachineProduction,
+    fetchRecentDowntime,
   };
 
   return (

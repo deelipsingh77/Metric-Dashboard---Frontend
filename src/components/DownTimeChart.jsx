@@ -11,8 +11,6 @@ import {
   YAxis,
 } from "recharts";
 
-import { data } from "@/utils/data";
-
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
@@ -26,7 +24,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const DownTimeChart = ({width, height}) => {
+const DownTimeChart = ({width, height, data}) => {
   return (
     <div className="py-4">
       <LineChart

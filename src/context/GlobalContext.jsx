@@ -140,7 +140,6 @@ export const GlobalProvider = ({ children }) => {
     try {
       const data = await Machine.getMachines();
       setTotalMachines(data);
-      console.log(data);
     } catch (error) {
       setError(error);
     } finally {

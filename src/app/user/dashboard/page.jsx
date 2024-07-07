@@ -51,8 +51,6 @@ const Dashboard = () => {
     totalMachines,
   } = useGlobal();
 
-  console.log("Recent Manpower Downtime", recentManpowerDowntime);
-
   const transformMachineData = (machineId) => {
     const dailyMachineData = dailyMachineProduction.find(
       (item) => item.machine === machineId

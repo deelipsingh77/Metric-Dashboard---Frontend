@@ -9,6 +9,8 @@ import {
   query,
   Timestamp,
   where,
+  writeBatch,
+  doc,
 } from "firebase/firestore";
 import { z } from "zod";
 
@@ -28,6 +30,11 @@ export default class Production {
 
   static async addProduction(data) {
     try {
+      if (data.createdAt) {
+        data.createdAt = new Date(data.createdAt);
+      } else {
+        data.createdAt = new Date();
+      }
       const validatedData = productionSchema.parse({
         ...data,
         rc: Number(data.rc),
@@ -37,12 +44,42 @@ export default class Production {
         cp: Number(data.cp),
         cpTarget: Number(data.cpTarget),
         userId: data.userId,
-        createdAt: new Date(),
       });
-      validatedData.createdAt = Timestamp.fromDate(new Date());
+      validatedData.createdAt = Timestamp.fromDate(data.createdAt);
       return await addDoc(this.productionCollection, validatedData);
     } catch (error) {
       console.log(error.message);
+      throw error;
+    }
+  }
+
+  static async addMultipleProductions(dataArray, userId) {
+    const batch = writeBatch(db);
+    try {
+      dataArray.forEach((data) => {
+        if (data.createdAt) {
+          data.createdAt = new Date(data.createdAt);
+        } else {
+          data.createdAt = new Date();
+        }
+        const validatedData = productionSchema.parse({
+          ...data,
+          rc: Number(data.rc),
+          rcTarget: Number(data.rcTarget),
+          tp: Number(data.tp),
+          tpTarget: Number(data.tpTarget),
+          cp: Number(data.cp),
+          cpTarget: Number(data.cpTarget),
+          userId: userId,
+        });
+        validatedData.createdAt = Timestamp.fromDate(data.createdAt);
+        const docRef = doc(this.productionCollection);
+        batch.set(docRef, validatedData);
+      });
+
+      await batch.commit();
+    } catch (error) {
+      console.error("Error adding multiple productions:", error.message);
       throw error;
     }
   }

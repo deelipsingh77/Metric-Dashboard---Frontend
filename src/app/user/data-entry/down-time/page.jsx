@@ -40,7 +40,6 @@ const DowntimeEntry = () => {
 
   const fetchData = async () => {
     const data = await DowntimeData.getDowntime();
-    console.log(data);
     setDowntimeData(data);
   };
 

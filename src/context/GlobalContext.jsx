@@ -6,6 +6,7 @@ import Loading from "@/components/Loading";
 import Machine from "@/models/MachineModel";
 import DailyMachineProduction from "@/models/DailyMachineProductionModel";
 import DowntimeData from "@/models/DowntimeModel";
+import ManpowerDowntimeData from "@/models/PackingDowntimeModel";
 
 const GlobalContext = createContext();
 
@@ -31,6 +32,7 @@ export const GlobalProvider = ({ children }) => {
     useState(null);
 
   const [recentDowntime, setRecentDowntime] = useState([]);
+  const [recentManpowerDowntime, setRecentManpowerDowntime] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -183,7 +185,7 @@ export const GlobalProvider = ({ children }) => {
     try {
       const data = await DowntimeData.getDowntimeForMostRecentDay();
 
-      const transformData = (fetchedData) => {
+      const transformedDowntimeData = (fetchedData) => {
         const data = [];
         for (let hour = 0; hour < 24; hour++) {
           const hourData = fetchedData.find((item) => item.hour === hour);
@@ -196,8 +198,34 @@ export const GlobalProvider = ({ children }) => {
         return data;
       };
 
-      const transformedData = transformData(data);
+      const transformedData = transformedDowntimeData(data);
       setRecentDowntime(transformedData);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchRecentManpowerDowntime = async () => {
+    try {
+      const data = await ManpowerDowntimeData.getDowntimeForMostRecentDay();
+
+      const transformData = (fetchedData) => {
+        const data = [];
+        for (let hour = 0; hour < 24; hour++) {
+          const hourData = fetchedData.find((item) => item.hour === hour);
+          const downManpower = hourData ? hourData.manpowerDown : 0;
+          data.push({
+            time: `${hour.toString().padStart(2, "0")}:00`,
+            downManpower: downManpower,
+          });
+        }
+        return data;
+      };
+
+      const transformedData = transformData(data);
+      setRecentManpowerDowntime(transformedData);
     } catch (error) {
       setError(error);
     } finally {
@@ -224,6 +252,7 @@ export const GlobalProvider = ({ children }) => {
     fetchLatestDailyMachineProductionData();
     fetchMonthlyMachineProduction();
     fetchRecentDowntime();
+    fetchRecentManpowerDowntime();
   }, [
     totalProduction,
     totalManpower,
@@ -239,6 +268,7 @@ export const GlobalProvider = ({ children }) => {
     yearlyCpProduction,
 
     recentDowntime,
+    recentManpowerDowntime,
 
     manpower,
     totalManpower,

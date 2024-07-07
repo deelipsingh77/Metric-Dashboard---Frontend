@@ -29,7 +29,11 @@ const routes = [
       },
       {
         route: "/user/data-entry/down-time",
-        name: "Down Time",
+        name: "Production Down Time",
+      },
+      {
+        route: "/user/data-entry/packing-down-time",
+        name: "Packing Down Time",
       },
     ],
   },

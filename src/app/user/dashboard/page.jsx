@@ -9,6 +9,7 @@ import {
 import Smileys from "@/components/Smileys";
 import { data, monthlyProductionData } from "@/utils/data";
 import DownTimeChart from "@/components/DownTimeChart";
+import ManpowerDowntimeChart from "@/components/ManpowerDowntimeChart";
 import BarGraph from "@/components/BarGraph";
 import MachineBarGraph from "@/components/MachineBarGraph";
 import NeedlePieChart from "@/components/NeedlePieChart";
@@ -41,6 +42,7 @@ const Dashboard = () => {
     yearlyCpProduction,
 
     recentDowntime,
+    recentManpowerDowntime,
 
     manpower,
     dailyMachineProduction,
@@ -48,6 +50,8 @@ const Dashboard = () => {
     monthlyMachineProduction,
     totalMachines,
   } = useGlobal();
+
+  console.log("Recent Manpower Downtime", recentManpowerDowntime);
 
   const transformMachineData = (machineId) => {
     const dailyMachineData = dailyMachineProduction.find(
@@ -350,7 +354,7 @@ const Dashboard = () => {
           <CardHeader className="font-semibold p-2 text-lg">
             Packing Down Time
           </CardHeader>
-          <DownTimeChart data={data} width={window.innerWidth < 640 ? 350 : 1250} />
+          <ManpowerDowntimeChart data={recentManpowerDowntime} width={window.innerWidth < 640 ? 350 : 1250} />
         </Card>
       </section>
     </main>

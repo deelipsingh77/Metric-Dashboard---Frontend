@@ -18,7 +18,7 @@ export const GlobalProvider = ({ children }) => {
   const [yearlyTpProduction, setYearlyTpProduction] = useState(null);
   const [yearlyCpProduction, setYearlyCpProduction] = useState(null);
 
-  const [manpower, setManpower] = useState([]);
+  const [manpower, setManpower] = useState(null);
   const [totalManpower, setTotalManpower] = useState(null);
 
   const [monthlyTarget, setMonthlyTarget] = useState([]);

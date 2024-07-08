@@ -12,21 +12,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import Production from "@/models/ProductionModel";
 import Manpower from "@/models/ManpowerModel";
 import { ErrorAlert } from "@/components/ErrorAlert";
 import * as XLSX from "xlsx";
 import DowntimeData from "@/models/DowntimeModel";
 import PackingDowntimeData from "@/models/PackingDowntimeModel";
-import Machine from "@/models/MachineModel";
 import DailyMachineProduction from "@/models/DailyMachineProductionModel";
 
 const BatchEntry = () => {
@@ -41,7 +32,7 @@ const BatchEntry = () => {
     fetchRecentDowntime,
     fetchRecentManpowerDowntime,
     totalMachines,
-    getDailyMachineProduction
+    getDailyMachineProduction,
   } = useGlobal();
 
   const [file, setFile] = useState(null);
@@ -59,6 +50,11 @@ const BatchEntry = () => {
   useEffect(() => {
     if (file) {
       readExcel();
+    } else {
+      setProduction([]);
+      setDowntime([]);
+      setPackingDowntime([]);
+      setMachine([]);
     }
   }, [file]);
 
@@ -120,6 +116,11 @@ const BatchEntry = () => {
         user?.uid
       ));
 
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+
     setFile(null);
     setProduction([]);
     setDowntime([]);
@@ -132,7 +133,6 @@ const BatchEntry = () => {
     fetchRecentDowntime();
     fetchRecentManpowerDowntime();
     getDailyMachineProduction();
-
   };
 
   const filterRecords = (jsonData) => {
@@ -298,167 +298,193 @@ const BatchEntry = () => {
     reader.readAsBinaryString(file);
   };
 
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    // Optional: Add some visual feedback like changing the border color
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const droppedFiles = event.dataTransfer.files[0];
+    setFile(droppedFiles);
+  };
+
   return (
     <main className="relative flex flex-col">
       {showAlert && !error && <SuccessAlert />}
       {error && <ErrorAlert error={error} />}
-      <div className="flex gap-4 justify-center mb-4">
-        <Dialog>
-          <DialogTrigger>
-            <Button>Add Excel Data</Button>
-          </DialogTrigger>
-          <DialogContent className="min-w-fit">
-            <DialogHeader>
-              <DialogTitle>Choose Excel File</DialogTitle>
-            </DialogHeader>
-            <div className="max-h-96 overflow-y-auto">
-              <form onSubmit={handleUpload}>
+      <div>
+        {!file && (
+          <div className="w-full flex justify-center h-[90vh] items-center text-2xl">
+            <label htmlFor="fileInput" className="cursor-pointer">
+              <div
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                className="border-dashed border-slate-200 border-2 rounded-lg flex flex-col items-center justify-center cursor-pointer h-[50vh] w-[50vw]"
+              >
+                <p>Drag and drop your Excel Spreadsheet file here (.xlsx or .xls)</p>
+                <p>or,</p>
                 <input
                   type="file"
-                  accept=".xlsx, .xls"
+                  multiple
                   onChange={handleFileChange}
+                  className="hidden"
+                  id="fileInput"
+                  accept=".xlsx, .xls"
                 />
-                <Button type="submit">Submit</Button>
-              </form>
-              {production.length > 0 && (
-                <h1 className="text-2xl text-center font-bold m-4">
-                  Production
-                </h1>
-              )}
-              {production.length > 0 && (
-                <Table className="w-full">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>RC</TableHead>
-                      <TableHead>RC Target</TableHead>
-                      <TableHead>RC Manpower</TableHead>
-                      <TableHead>TP</TableHead>
-                      <TableHead>TP Target</TableHead>
-                      <TableHead>TP Manpower</TableHead>
-                      <TableHead>CP</TableHead>
-                      <TableHead>CP Target</TableHead>
-                      <TableHead>CP Manpower</TableHead>
-                      <TableHead>PF</TableHead>
-                      <TableHead>CPT</TableHead>
-                      <TableHead>Created At</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {production.map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{item.rc}</TableCell>
-                        <TableCell>{item.rcTarget}</TableCell>
-                        <TableCell>{item.rcManpower}</TableCell>
-                        <TableCell>{item.tp}</TableCell>
-                        <TableCell>{item.tpTarget}</TableCell>
-                        <TableCell>{item.tpManpower}</TableCell>
-                        <TableCell>{item.cp}</TableCell>
-                        <TableCell>{item.cpTarget}</TableCell>
-                        <TableCell>{item.cpManpower}</TableCell>
-                        <TableCell>{item.pf}</TableCell>
-                        <TableCell>{item.cpt}</TableCell>
-                        <TableCell>
-                          {item.createdAt instanceof Date
-                            ? item.createdAt.toLocaleDateString()
-                            : "Invalid Date"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-              {downtime.length > 0 && (
-                <h1 className="text-2xl text-center font-bold m-4">
-                  Production Downtime
-                </h1>
-              )}
-              {downtime.length > 0 && (
-                <Table className="w-full">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Hour</TableHead>
-                      <TableHead>Machines Down</TableHead>
-                      <TableHead>Created At</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {downtime.map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{item.hour}</TableCell>
-                        <TableCell>{item.machinesDown}</TableCell>
-                        <TableCell>
-                          {item.createdAt instanceof Date
-                            ? item.createdAt.toLocaleDateString()
-                            : "Invalid Date"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-              {packingDowntime.length > 0 && (
-                <h1 className="text-2xl text-center font-bold m-4">
-                  Packing Downtime
-                </h1>
-              )}
-              {packingDowntime.length > 0 && (
-                <Table className="w-full">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Hour</TableHead>
-                      <TableHead>Manpower Down</TableHead>
-                      <TableHead>Created At</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {packingDowntime.map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{item.hour}</TableCell>
-                        <TableCell>{item.manpowerDown}</TableCell>
-                        <TableCell>
-                          {item.createdAt instanceof Date
-                            ? item.createdAt.toLocaleDateString()
-                            : "Invalid Date"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-              {machine.length > 0 && (
-                <h1 className="text-2xl text-center font-bold m-4">Machine</h1>
-              )}
-              {machine.length > 0 && (
-                <Table className="w-full">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Machine</TableHead>
-                      <TableHead>Daily Production</TableHead>
-                      <TableHead>Daily Target</TableHead>
-                      <TableHead>Packing Manpower</TableHead>
-                      <TableHead>Created At</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {machine.map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{item.machine}</TableCell>
-                        <TableCell>{item.dailyProduction}</TableCell>
-                        <TableCell>{item.dailyTarget}</TableCell>
-                        <TableCell>{item.packingManpower}</TableCell>
-                        <TableCell>
-                          {item.createdAt instanceof Date
-                            ? item.createdAt.toLocaleDateString()
-                            : "Invalid Date"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
+                Click to select files
+              </div>
+            </label>
+          </div>
+        )}
+        {file && (
+          <div className="flex justify-between m-4">
+            <h3>File: {file.name}</h3>
+            <div className="flex gap-4">
+              <Button onClick={handleUpload}>Upload</Button>
+              <Button onClick={() => setFile(null)}>Choose Another</Button>
             </div>
-          </DialogContent>
-        </Dialog>
+          </div>
+        )}
+      </div>
+
+      <div className="overflow-y-auto">
+        {production.length > 0 && (
+          <h1 className="text-2xl text-center font-bold m-4">Production</h1>
+        )}
+        {production.length > 0 && (
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead>RC</TableHead>
+                <TableHead>RC Target</TableHead>
+                <TableHead>RC Manpower</TableHead>
+                <TableHead>TP</TableHead>
+                <TableHead>TP Target</TableHead>
+                <TableHead>TP Manpower</TableHead>
+                <TableHead>CP</TableHead>
+                <TableHead>CP Target</TableHead>
+                <TableHead>CP Manpower</TableHead>
+                <TableHead>PF</TableHead>
+                <TableHead>CPT</TableHead>
+                <TableHead>Created At</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {production.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.rc}</TableCell>
+                  <TableCell>{item.rcTarget}</TableCell>
+                  <TableCell>{item.rcManpower}</TableCell>
+                  <TableCell>{item.tp}</TableCell>
+                  <TableCell>{item.tpTarget}</TableCell>
+                  <TableCell>{item.tpManpower}</TableCell>
+                  <TableCell>{item.cp}</TableCell>
+                  <TableCell>{item.cpTarget}</TableCell>
+                  <TableCell>{item.cpManpower}</TableCell>
+                  <TableCell>{item.pf}</TableCell>
+                  <TableCell>{item.cpt}</TableCell>
+                  <TableCell>
+                    {item.createdAt instanceof Date
+                      ? item.createdAt.toLocaleDateString()
+                      : "Invalid Date"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+        {downtime.length > 0 && (
+          <h1 className="text-2xl text-center font-bold m-4">
+            Production Downtime
+          </h1>
+        )}
+        {downtime.length > 0 && (
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Hour</TableHead>
+                <TableHead>Machines Down</TableHead>
+                <TableHead>Created At</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {downtime.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.hour}</TableCell>
+                  <TableCell>{item.machinesDown}</TableCell>
+                  <TableCell>
+                    {item.createdAt instanceof Date
+                      ? item.createdAt.toLocaleDateString()
+                      : "Invalid Date"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+        {packingDowntime.length > 0 && (
+          <h1 className="text-2xl text-center font-bold m-4">
+            Packing Downtime
+          </h1>
+        )}
+        {packingDowntime.length > 0 && (
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Hour</TableHead>
+                <TableHead>Manpower Down</TableHead>
+                <TableHead>Created At</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {packingDowntime.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.hour}</TableCell>
+                  <TableCell>{item.manpowerDown}</TableCell>
+                  <TableCell>
+                    {item.createdAt instanceof Date
+                      ? item.createdAt.toLocaleDateString()
+                      : "Invalid Date"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+        {machine.length > 0 && (
+          <h1 className="text-2xl text-center font-bold m-4">Machine</h1>
+        )}
+        {machine.length > 0 && (
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Machine</TableHead>
+                <TableHead>Daily Production</TableHead>
+                <TableHead>Daily Target</TableHead>
+                <TableHead>Packing Manpower</TableHead>
+                <TableHead>Created At</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {machine.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.machine}</TableCell>
+                  <TableCell>{item.dailyProduction}</TableCell>
+                  <TableCell>{item.dailyTarget}</TableCell>
+                  <TableCell>{item.packingManpower}</TableCell>
+                  <TableCell>
+                    {item.createdAt instanceof Date
+                      ? item.createdAt.toLocaleDateString()
+                      : "Invalid Date"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
 
       {/* <div className="w-full px-4 shadow-lg rounded-xl">

@@ -7,16 +7,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Smileys from "@/components/Smileys";
-import { data, monthlyProductionData } from "@/utils/data";
-import DownTimeChart from "@/components/DownTimeChart";
-import ManpowerDowntimeChart from "@/components/ManpowerDowntimeChart";
 import BarGraph from "@/components/BarGraph";
-import MachineBarGraph from "@/components/MachineBarGraph";
 import NeedlePieChart from "@/components/NeedlePieChart";
 import { DataTable } from "@/components/DataTable";
 import { useGlobal } from "@/context/GlobalContext";
-import { useEffect, useState } from "react";
-import { isSameMonth } from "date-fns";
+import { Barchart } from "@/components/BarChart";
+import { ProductionLinechart, ManpowerLinechart } from "@/components/LineChart";
+import { YearlyBarchart } from "@/components/YearlyBarChart";
 
 export const columns = [
   {
@@ -77,26 +74,6 @@ const Dashboard = () => {
     ];
   };
 
-  // const production = {
-  //   rc: parseInt(production[0]?.rc) || 0,
-  //   tp: parseInt(production[0]?.tp) || 0,
-  //   cp: parseInt(production[0]?.cp) || 0,
-  //   rcTarget: parseInt(production[0]?.rcTarget) || 0,
-  //   tpTarget: parseInt(production[0]?.tpTarget) || 0,
-  //   cpTarget: parseInt(production[0]?.cpTarget) || 0,
-  //   pf: parseInt(production[0]?.pf) || 0,
-  //   cpt: parseFloat(production[0]?.cpt) || 0,
-  // };
-
-  // const manpower = {
-  //   rc: parseInt(manpower[0]?.rc) || 0,
-  //   tp: parseInt(manpower[0]?.tp) || 0,
-  //   cp: parseInt(manpower[0]?.cp) || 0,
-  //   rcTarget: parseInt(manpower[0]?.rcTarget) || 0,
-  //   tpTarget: parseInt(manpower[0]?.tpTarget) || 0,
-  //   cpTarget: parseInt(manpower[0]?.cpTarget) || 0,
-  // };
-
   const machineIdToName = totalMachines.reduce((acc, machine) => {
     acc[machine.id] = machine.name;
     return acc;
@@ -116,7 +93,9 @@ const Dashboard = () => {
               <CardTitle>PF</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-3xl">{production.pf}</CardDescription>
+              <CardDescription className="text-3xl">
+                {production.pf}
+              </CardDescription>
             </CardContent>
           </Card>
 
@@ -125,7 +104,9 @@ const Dashboard = () => {
               <CardTitle>CPT</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-3xl">{production.cpt}</CardDescription>
+              <CardDescription className="text-3xl">
+                {production.cpt}
+              </CardDescription>
             </CardContent>
           </Card>
         </div>
@@ -239,39 +220,27 @@ const Dashboard = () => {
             <CardHeader className="text-center pb-0 font-bold text-xl">
               RC
             </CardHeader>
-            <NeedlePieChart
-              value={production.rc}
-              total={production.rcTarget}
-            />
+            <NeedlePieChart value={production.rc} total={production.rcTarget} />
             <h1 className="text-center text-2xl font-bold pb-4">
-              {production.rcTarget} <sub>T</sub> / {production.rc}{" "}
-              <sub>P</sub>
+              {production.rcTarget} <sub>T</sub> / {production.rc} <sub>P</sub>
             </h1>
           </Card>
           <Card className="flex flex-col min-h-60 dark:bg-slate-900">
             <CardHeader className="text-center pb-0 font-bold text-xl">
               TP
             </CardHeader>
-            <NeedlePieChart
-              value={production.tp}
-              total={production.tpTarget}
-            />
+            <NeedlePieChart value={production.tp} total={production.tpTarget} />
             <h1 className="text-center text-2xl font-bold pb-4">
-              {production.tpTarget} <sub>T</sub> / {production.tp}{" "}
-              <sub>P</sub>
+              {production.tpTarget} <sub>T</sub> / {production.tp} <sub>P</sub>
             </h1>
           </Card>
           <Card className="flex flex-col min-h-60 dark:bg-slate-900">
             <CardHeader className="text-center pb-0 font-bold text-xl">
               CP
             </CardHeader>
-            <NeedlePieChart
-              value={production.cp}
-              total={production.cpTarget}
-            />
+            <NeedlePieChart value={production.cp} total={production.cpTarget} />
             <h1 className="text-center text-2xl font-bold pb-4">
-              {production.cpTarget} <sub>T</sub> / {production.cp}{" "}
-              <sub>P</sub>
+              {production.cpTarget} <sub>T</sub> / {production.cp} <sub>P</sub>
             </h1>
           </Card>
           <Card className="flex flex-col min-h-60 dark:bg-slate-900">
@@ -281,17 +250,12 @@ const Dashboard = () => {
             <NeedlePieChart
               value={production.tp + production.rc + production.cp}
               total={
-                production.tpTarget +
-                production.rcTarget +
-                production.cpTarget
+                production.tpTarget + production.rcTarget + production.cpTarget
               }
             />
             <h1 className="text-center text-2xl font-bold pb-4">
-              {production.tpTarget +
-                production.rcTarget +
-                production.cpTarget}{" "}
-              <sub>T</sub> /{" "}
-              {production.tp + production.rc + production.cp}{" "}
+              {production.tpTarget + production.rcTarget + production.cpTarget}{" "}
+              <sub>T</sub> / {production.tp + production.rc + production.cp}{" "}
               <sub>P</sub>
             </h1>
           </Card>
@@ -307,9 +271,10 @@ const Dashboard = () => {
                 {machine.name}
               </CardHeader>
               <CardContent className="p-0">
-                <MachineBarGraph
+                {/* <MachineBarGraph
                   monthlyProductionData={transformMachineData(machine.id)}
-                />
+                /> */}
+                <Barchart chartData={transformMachineData(machine.id)} />
               </CardContent>
             </Card>
           ))}
@@ -322,40 +287,40 @@ const Dashboard = () => {
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">Total</CardHeader>
             <CardContent className="p-0">
-              <BarGraph monthlyProductionData={yearlyProduction} />
+              {/* <BarGraph monthlyProductionData={yearlyProduction} /> */}
+              <YearlyBarchart chartData={yearlyProduction} />
             </CardContent>
           </Card>
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">RC</CardHeader>
             <CardContent className="p-0">
-              <BarGraph monthlyProductionData={yearlyRcProduction} />
+              {/* <BarGraph monthlyProductionData={yearlyRcProduction} /> */}
+              <YearlyBarchart chartData={yearlyRcProduction} />
             </CardContent>
           </Card>
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">TP</CardHeader>
             <CardContent className="p-0">
-              <BarGraph monthlyProductionData={yearlyTpProduction} />
+              {/* <BarGraph monthlyProductionData={yearlyTpProduction} /> */}
+              <YearlyBarchart chartData={yearlyTpProduction} />
             </CardContent>
           </Card>
           <Card className="shadow-md rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
             <CardHeader className="font-semibold p-2 text-lg">CP</CardHeader>
             <CardContent className="p-0">
-              <BarGraph monthlyProductionData={yearlyCpProduction} />
+              {/* <BarGraph monthlyProductionData={yearlyCpProduction} /> */}
+              <YearlyBarchart chartData={yearlyCpProduction} />
             </CardContent>
           </Card>
         </div>
-        <Card className="shadow-md col-span-12 rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
-          <CardHeader className="font-semibold p-2 text-lg">
-            Production Down Time
-          </CardHeader>
-          <DownTimeChart data={recentDowntime} width={window.innerWidth < 640 ? 350 : 1250} />
-        </Card>
-        <Card className="shadow-md col-span-12 rounded-xl flex flex-col justify-center items-center dark:bg-slate-900">
-          <CardHeader className="font-semibold p-2 text-lg">
-            Packing Down Time
-          </CardHeader>
-          <ManpowerDowntimeChart data={recentManpowerDowntime} width={window.innerWidth < 640 ? 350 : 1250} />
-        </Card>
+
+        <div className="shadow-md col-span-12 rounded-xl flex flex-col justify-center items-center dark:bg-slate-900 mx-2">
+          <ProductionLinechart data={recentDowntime}/>
+        </div>
+
+        <div className="shadow-md col-span-12 rounded-xl flex flex-col justify-center items-center dark:bg-slate-900 mx-2">
+          <ManpowerLinechart data={recentManpowerDowntime}/>
+        </div>
       </section>
     </main>
   );

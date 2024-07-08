@@ -29,7 +29,7 @@ const chartConfig = {
 
 export function ProductionLinechart({ data }) {
   return (
-    <Card className="w-full">
+    <Card className="w-full dark:bg-slate-900">
       <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Production Downtime</CardTitle>
@@ -94,7 +94,7 @@ const chartConfigManpower = {
 
 export function ManpowerLinechart({ data }) {
   return (
-    <Card className="w-full">
+    <Card className="w-full dark:bg-slate-900">
       <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Packing Downtime</CardTitle>

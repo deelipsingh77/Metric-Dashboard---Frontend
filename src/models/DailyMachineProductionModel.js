@@ -2,12 +2,14 @@ import { db } from "@/config/firebase";
 import {
   addDoc,
   collection,
+  doc,
   getDocs,
   limit,
   orderBy,
   query,
   Timestamp,
   where,
+  writeBatch,
 } from "firebase/firestore";
 import { z } from "zod";
 import { startOfMonth, endOfMonth, format } from "date-fns";
@@ -41,6 +43,35 @@ export default class DailyMachineProduction {
       return await addDoc(this.dailyMachineProductionCollection, validatedData);
     } catch (error) {
       console.log(error.message);
+      throw error;
+    }
+  }
+
+  static async addMultipleMachineProductions(dataArray, userId) {
+    const batch = writeBatch(db);
+    try {
+      dataArray.forEach((data) => {
+        if (data.createdAt) {
+          data.createdAt = new Date(data.createdAt);
+        } else {
+          data.createdAt = new Date();
+        }
+        const validatedData = dailyMachineProductionSchema.parse({
+          ...data,
+          machine: data.machine,
+          dailyProduction: Number(data.dailyProduction),
+          dailyTarget: Number(data.dailyTarget),
+          packingManpower: Number(data.packingManpower),
+          userId: userId,
+        });
+        validatedData.createdAt = Timestamp.fromDate(data.createdAt);
+        const docRef = doc(this.dailyMachineProductionCollection);
+        batch.set(docRef, validatedData);
+      });
+
+      await batch.commit();
+    } catch (error) {
+      console.error("Error adding multiple productions:", error.message);
       throw error;
     }
   }

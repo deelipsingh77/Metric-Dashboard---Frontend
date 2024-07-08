@@ -3,12 +3,14 @@ import { endOfDay, startOfDay } from "date-fns";
 import {
   addDoc,
   collection,
+  doc,
   getDocs,
   limit,
   orderBy,
   query,
   Timestamp,
   where,
+  writeBatch,
 } from "firebase/firestore";
 import { z } from "zod";
 
@@ -34,6 +36,33 @@ export default class PackingDowntimeData {
       return await addDoc(this.downtimeCollection, validatedData);
     } catch (error) {
       console.error("Validation error:", error.errors);
+      throw error;
+    }
+  }
+
+  static async addMultipleDowntime(dataArray, userId) {
+    const batch = writeBatch(db);
+    try {
+      dataArray.forEach((data) => {
+        if (data.createdAt) {
+          data.createdAt = new Date(data.createdAt);
+        } else {
+          data.createdAt = new Date();
+        }
+        const validatedData = downtimeSchema.parse({
+          ...data,
+          hour: Number(data.hour),
+          manpowerDown: Number(data.manpowerDown),
+          userId: userId,
+        });
+        validatedData.createdAt = Timestamp.fromDate(data.createdAt);
+        const docRef = doc(this.downtimeCollection);
+        batch.set(docRef, validatedData);
+      });
+
+      await batch.commit();
+    } catch (error) {
+      console.error("Error adding multiple packing downtime:", error.message);
       throw error;
     }
   }

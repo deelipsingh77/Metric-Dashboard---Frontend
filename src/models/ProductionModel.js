@@ -21,6 +21,8 @@ const productionSchema = z.object({
   tpTarget: z.number().nonnegative(),
   cp: z.number().nonnegative(),
   cpTarget: z.number().nonnegative(),
+  pf: z.number().nonnegative(),
+  cpt: z.number().nonnegative(),
   userId: z.string(),
   createdAt: z.instanceof(Date),
 });
@@ -43,6 +45,8 @@ export default class Production {
         tpTarget: Number(data.tpTarget),
         cp: Number(data.cp),
         cpTarget: Number(data.cpTarget),
+        pf: Number(data.pf),
+        cpt: Number(data.cpt),
         userId: data.userId,
       });
       validatedData.createdAt = Timestamp.fromDate(data.createdAt);
@@ -70,6 +74,8 @@ export default class Production {
           tpTarget: Number(data.tpTarget),
           cp: Number(data.cp),
           cpTarget: Number(data.cpTarget),
+          pf: Number(data.pf),
+          cpt: Number(data.cpt),
           userId: userId,
         });
         validatedData.createdAt = Timestamp.fromDate(data.createdAt);
@@ -110,10 +116,10 @@ export default class Production {
 
       if (!querySnapshot.empty) {
         const latestData = querySnapshot.docs[0].data();
-        return [latestData];
+        return latestData;
       } else {
         console.log("No documents found in production collection.");
-        return [];
+        return null;
       }
     } catch (error) {
       console.error("Error fetching latest production data:", error.message);

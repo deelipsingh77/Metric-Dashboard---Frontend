@@ -11,7 +11,7 @@ import ManpowerDowntimeData from "@/models/PackingDowntimeModel";
 const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
-  const [production, setProduction] = useState([]);
+  const [production, setProduction] = useState(null);
   const [totalProduction, setTotalProduction] = useState(null);
   const [yearlyProduction, setYearlyProduction] = useState(null);
   const [yearlyRcProduction, setYearlyRcProduction] = useState(null);
@@ -284,6 +284,7 @@ export const GlobalProvider = ({ children }) => {
     getMachine,
     getDailyMachineProduction,
     fetchRecentDowntime,
+    fetchRecentManpowerDowntime,
   };
 
   return (

@@ -4,10 +4,6 @@ const routes = [
     name: "Dashboard",
   },
   {
-    route: "/user/monthly-dashboard",
-    name: "Monthly Dashboard",
-  },
-  {
     route: "/user/data-entry",
     name: "Data Entry",
     subRoutes: [
@@ -35,6 +31,10 @@ const routes = [
         route: "/user/data-entry/packing-down-time",
         name: "Packing Down Time",
       },
+      {
+        route: "/user/data-entry/batch-entry",
+        name: "Batch Entry",
+      }
     ],
   },
 ];

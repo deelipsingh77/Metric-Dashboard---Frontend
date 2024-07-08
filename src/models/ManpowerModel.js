@@ -7,6 +7,8 @@ import {
   orderBy,
   query,
   Timestamp,
+  writeBatch,
+  doc,
 } from "firebase/firestore";
 import { z } from "zod";
 
@@ -38,6 +40,34 @@ export default class Manpower {
     }
   }
 
+  static async addMultipleManpower(dataArray, userId) {
+    const batch = writeBatch(db);
+    try {
+      dataArray.forEach((data) => {
+        if (data.createdAt) {
+          data.createdAt = new Date(data.createdAt);
+        } else {
+          data.createdAt = new Date();
+        }
+        const validatedData = manpowerSchema.parse({
+          ...data,
+          rc: Number(data.rc),
+          tp: Number(data.tp),
+          cp: Number(data.cp),
+          userId: userId,
+        });
+        validatedData.createdAt = Timestamp.fromDate(data.createdAt);
+        const docRef = doc(this.manpowerCollection);
+        batch.set(docRef, validatedData);
+      });
+
+      await batch.commit();
+    } catch (error) {
+      console.error("Error adding multiple manpower:", error.message);
+      throw error;
+    }
+  }
+
   static async getManpowers() {
     try {
       const querySnapshot = await getDocs(this.manpowerCollection);
@@ -64,10 +94,10 @@ export default class Manpower {
 
       if (!querySnapshot.empty) {
         const latestData = querySnapshot.docs[0].data();
-        return [latestData];
+        return latestData;
       } else {
         console.log("No documents found in manpower collection.");
-        return [];
+        return null;
       }
     } catch (error) {
       console.error("Error fetching latest manpower data:", error);
